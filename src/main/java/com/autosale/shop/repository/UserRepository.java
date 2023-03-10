@@ -20,12 +20,12 @@ public class UserRepository {
 
     private final DSLContext dsl;
 
-    public List<User> getAll() {
+    public List<User> findAll() {
         return dsl.selectFrom(USERS)
                 .fetchInto(User.class);
     }
 
-    public Optional<UsersRecord> readById(int id) {
+    public Optional<UsersRecord> findById(int id) {
         return dsl.selectFrom(USERS)
                 .where(USERS.ID.eq(id))
                 .fetchOptional();
@@ -34,7 +34,7 @@ public class UserRepository {
     public Optional<UsersRecord> save(User user) {
         return dsl.insertInto(USERS)
                 .set(dsl.newRecord(USERS, user))
-                .returning()
+                .returning(USERS.ID)
                 .fetchOptional();
     }
 

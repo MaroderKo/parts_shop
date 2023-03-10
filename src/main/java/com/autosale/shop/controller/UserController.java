@@ -2,6 +2,7 @@ package com.autosale.shop.controller;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public Integer create(@RequestBody User user)
     {
         return userService.create(user);

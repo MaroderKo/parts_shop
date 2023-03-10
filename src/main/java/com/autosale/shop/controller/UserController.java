@@ -28,7 +28,7 @@ public class UserController {
         return userService.create(user);
     }
 
-    @PostMapping("/get/{id}")
+    @GetMapping("/get/{id}")
     public User findById(@PathVariable int id){
         return userService.findById(id);
     }

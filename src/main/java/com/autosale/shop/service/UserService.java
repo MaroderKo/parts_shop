@@ -4,14 +4,14 @@ import com.autosale.shop.model.User;
 
 import java.util.List;
 
-public interface UserService<T> {
-    List<T> findAll();
+public interface UserService {
+    List<User> findAll();
 
     User findById(int id);
 
-    Integer create(T t);
+    Integer create(User user);
 
-    int edit(T t);
+    int edit(User user);
 
     int delete(int id);
 }

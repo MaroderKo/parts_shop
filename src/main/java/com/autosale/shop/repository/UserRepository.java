@@ -1,19 +1,20 @@
 package com.autosale.shop.repository;
 
+import com.autosale.shop.model.User;
 import org.jooq.Record1;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository<T> {
+public interface UserRepository {
 
-    List<T> findAll();
+    List<User> findAll();
 
-    Optional<T> findById(int id);
+    Optional<User> findById(int id);
 
-    Optional<Record1<Integer>> save(T t);
+    Optional<Integer> save(User user);
 
-    int update(T t);
+    int update(User user);
 
     int deleteById(int id);
 }

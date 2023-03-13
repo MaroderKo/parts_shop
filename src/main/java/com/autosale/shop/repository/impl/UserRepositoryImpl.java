@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +16,8 @@ import static shop.domain.tables.Users.USERS;
 
 
 @RequiredArgsConstructor
-@Component
-public class UserRepositoryImpl implements UserRepository<User> {
+@Repository
+public class UserRepositoryImpl implements UserRepository {
 
     private final DSLContext dsl;
 
@@ -30,16 +31,15 @@ public class UserRepositoryImpl implements UserRepository<User> {
     public Optional<User> findById(int id) {
         return dsl.selectFrom(USERS)
                 .where(USERS.ID.eq(id))
-                .fetchOptional()
-                .map(usersRecord -> usersRecord.into(User.class));
+                .fetchOptionalInto(User.class);
     }
 
     @Override
-    public Optional<Record1<Integer>> save(User user) {
+    public Optional<Integer> save(User user) {
         return dsl.insertInto(USERS)
                 .set(dsl.newRecord(USERS, user))
                 .returningResult(USERS.ID)
-                .fetchOptional();
+                .fetchOptionalInto(Integer.class);
     }
 
     @Override

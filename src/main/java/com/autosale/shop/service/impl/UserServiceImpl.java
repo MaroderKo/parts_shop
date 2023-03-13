@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService<User> {
+public class UserServiceImpl implements UserService {
 
     private final UserRepositoryImpl repository;
 
@@ -33,8 +33,7 @@ public class UserServiceImpl implements UserService<User> {
     public Integer create(User user) {
 
         return repository.save(user)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user to database"))
-                .map(record -> record.get(Users.USERS.ID));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user to database"));
     }
 
     @Override

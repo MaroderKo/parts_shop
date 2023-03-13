@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(501).body(e.getMessage());
     }
 }

@@ -3,8 +3,9 @@ package com.autosale.shop.service;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.jooq.exception.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import shop.domain.tables.Users;
 
 import java.util.List;
@@ -22,13 +23,13 @@ public class UserService {
     public User findById(int id)
     {
         return repository.findById(id)
-                .orElseThrow(() -> new DataAccessException("Cannot find user with id "+id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cannot find user with id "+id));
     }
 
     public Integer create(User user) {
 
         return repository.save(user)
-                .orElseThrow(() -> new DataAccessException("Cannot save user to database"))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user to database"))
                 .map(record -> record.get(Users.USERS.ID));
     }
 

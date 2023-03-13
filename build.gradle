@@ -45,12 +45,6 @@ jooq {
 					url = 'jdbc:postgresql://localhost:5432/parts_shop'
 					user = 'postgres'
 					password = 'postgres'
-					properties {
-						property {
-							key = 'PAGE_SIZE'
-							value = 2048
-						}
-					}
 				}
 				generator {
 					name = 'org.jooq.codegen.DefaultGenerator'

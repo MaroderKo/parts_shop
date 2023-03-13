@@ -1,0 +1,1 @@
+alter table users rename column login to user_name;

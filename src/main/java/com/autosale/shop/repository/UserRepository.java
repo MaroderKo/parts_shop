@@ -43,10 +43,8 @@ public class UserRepository implements BasicRepository<User>{
 
     @Override
     public int update(User user) {
-        return dsl.update(USERS)
-                .set(dsl.newRecord(USERS, user))
-                .where(USERS.ID.eq(user.getId()))
-                .execute();
+        return dsl.newRecord(USERS,user)
+                .update();
 
     }
 

@@ -5,8 +5,6 @@ import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.jooq.Record1;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

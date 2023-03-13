@@ -1,7 +1,9 @@
 package com.autosale.shop.controller;
 
 import com.autosale.shop.model.User;
+import com.autosale.shop.service.UserService;
 import com.autosale.shop.service.impl.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.jooq.exception.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final UserServiceImpl userServiceImpl;
-
-    public UserController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-    }
+    private final UserService userServiceImpl;
 
     @GetMapping
     public List<User> findAll() {

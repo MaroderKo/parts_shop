@@ -1,6 +1,7 @@
 package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.User;
+import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.repository.impl.UserRepositoryImpl;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepositoryImpl repository;
+    private final UserRepository repository;
 
     @Override
     public List<User> findAll() {

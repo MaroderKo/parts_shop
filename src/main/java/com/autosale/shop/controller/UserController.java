@@ -1,7 +1,7 @@
 package com.autosale.shop.controller;
 
 import com.autosale.shop.model.User;
-import com.autosale.shop.service.UserService;
+import com.autosale.shop.service.impl.UserServiceImpl;
 import org.jooq.exception.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,21 +12,21 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
     }
 
     @GetMapping
     public List<User> findAll() {
-        return userService.findAll();
+        return userServiceImpl.findAll();
     }
 
     @PostMapping()
     public ResponseEntity<Integer> create(@RequestBody User user) {
 
-        return ResponseEntity.ok(userService.create(user));
+        return ResponseEntity.ok(userServiceImpl.create(user));
 
 
     }
@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> findById(@PathVariable int id) {
 
-        return ResponseEntity.ok(userService.findById(id));
+        return ResponseEntity.ok(userServiceImpl.findById(id));
 
 
     }
@@ -42,7 +42,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Integer> delete(@PathVariable int id) {
 
-        return ResponseEntity.ok(userService.delete(id));
+        return ResponseEntity.ok(userServiceImpl.delete(id));
 
 
     }
@@ -50,7 +50,7 @@ public class UserController {
     @PutMapping
     public ResponseEntity<Integer> update(@RequestBody User user) {
 
-        return ResponseEntity.ok(userService.edit(user));
+        return ResponseEntity.ok(userServiceImpl.edit(user));
 
     }
 

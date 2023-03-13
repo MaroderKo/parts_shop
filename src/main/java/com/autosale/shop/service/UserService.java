@@ -12,20 +12,23 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements BasicService<User> {
 
     private final UserRepository repository;
 
+    @Override
     public List<User> findAll() {
         return repository.findAll();
     }
 
+    @Override
     public User findById(int id)
     {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cannot find user with id "+id));
     }
 
+    @Override
     public Integer create(User user) {
 
         return repository.save(user)
@@ -33,10 +36,12 @@ public class UserService {
                 .map(record -> record.get(Users.USERS.ID));
     }
 
+    @Override
     public int edit(User user) {
         return repository.update(user);
     }
 
+    @Override
     public int delete(int id)
     {
         return repository.deleteById(id);

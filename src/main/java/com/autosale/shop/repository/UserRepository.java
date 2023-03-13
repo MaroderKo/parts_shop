@@ -15,15 +15,17 @@ import static shop.domain.tables.Users.USERS;
 
 @RequiredArgsConstructor
 @Component
-public class UserRepository {
+public class UserRepository implements BasicRepository<User>{
 
     private final DSLContext dsl;
 
+    @Override
     public List<User> findAll() {
         return dsl.selectFrom(USERS)
                 .fetchInto(User.class);
     }
 
+    @Override
     public Optional<User> findById(int id) {
         return dsl.selectFrom(USERS)
                 .where(USERS.ID.eq(id))
@@ -31,6 +33,7 @@ public class UserRepository {
                 .map(usersRecord -> usersRecord.into(User.class));
     }
 
+    @Override
     public Optional<Record1<Integer>> save(User user) {
         return dsl.insertInto(USERS)
                 .set(dsl.newRecord(USERS, user))
@@ -38,6 +41,7 @@ public class UserRepository {
                 .fetchOptional();
     }
 
+    @Override
     public int update(User user) {
         return dsl.update(USERS)
                 .set(dsl.newRecord(USERS, user))
@@ -46,6 +50,7 @@ public class UserRepository {
 
     }
 
+    @Override
     public int deleteById(int id) {
         return dsl.deleteFrom(USERS)
                 .where(USERS.ID.eq(id))

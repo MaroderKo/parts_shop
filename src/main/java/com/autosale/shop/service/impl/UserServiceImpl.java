@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int edit(User user) {
-        return repository.update(user);
+    public void edit(User user) {
+        repository.update(user);
     }
 
     @Override

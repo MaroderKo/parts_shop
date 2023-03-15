@@ -14,7 +14,7 @@ public interface UserRepository {
 
     Optional<Integer> save(User user);
 
-    int update(User user);
+    void update(User user);
 
     int deleteById(int id);
 }

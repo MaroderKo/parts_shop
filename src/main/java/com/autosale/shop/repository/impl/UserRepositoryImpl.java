@@ -41,8 +41,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public int update(User user) {
-        return dsl.newRecord(USERS,user)
+    public void update(User user) {
+        dsl.newRecord(USERS,user)
                 .update();
 
     }

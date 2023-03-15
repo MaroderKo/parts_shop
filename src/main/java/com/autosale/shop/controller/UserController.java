@@ -47,9 +47,10 @@ public class UserController {
     }
 
     @PutMapping
-    public ResponseEntity<Integer> update(@RequestBody User user) {
+    public ResponseEntity<Void> update(@RequestBody User user) {
 
-        return ResponseEntity.ok(userServiceImpl.edit(user));
+        userServiceImpl.edit(user);
+        return ResponseEntity.ok().build();
 
     }
 

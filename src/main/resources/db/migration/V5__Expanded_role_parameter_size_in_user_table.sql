@@ -1,0 +1,1 @@
+alter table users ALTER COLUMN role TYPE varchar(25)

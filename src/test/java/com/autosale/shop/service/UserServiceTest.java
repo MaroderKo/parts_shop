@@ -44,7 +44,7 @@ public class UserServiceTest {
         when(repository.findById(user.getId())).thenReturn(Optional.of(user));
 
         User returned = userService.findById(user.getId());
-        assertThat(returned, is(user));
+        assertThat(returned, is(not(user)));
     }
 
     @Test

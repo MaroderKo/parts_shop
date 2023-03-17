@@ -62,8 +62,8 @@ jooq {
 						fluentSetters = false
 					}
 					target {
-						packageName = 'shop.domain'
-						directory = 'build/classes/jooq'
+						packageName = 'structure'
+						directory = 'src/main/java/com/autosale/shop/model/database'
 					}
 					strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
 				}

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static shop.domain.tables.Users.USERS;
+import static structure.tables.Users.USERS;
 
 
 @RequiredArgsConstructor

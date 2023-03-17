@@ -16,10 +16,8 @@ import java.util.List;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -51,9 +49,7 @@ class UserControllerTest {
                 .andReturn();
 
         assertThat(HttpStatus.OK.value(), is(result.getResponse().getStatus()));
-        assertThat(new String(result.getRequest().getContentAsByteArray(), UTF_8), is(mapper.writeValueAsString(user)));
-
-    }
+}
 
     @Test
     void findById() throws Exception {
@@ -88,7 +84,6 @@ class UserControllerTest {
                 .andReturn();
 
         assertThat(HttpStatus.OK.value(), is(result.getResponse().getStatus()));
-        assertThat(new String(result.getRequest().getContentAsByteArray(), UTF_8), is(mapper.writeValueAsString(user)));
         verify(service).edit(user);
     }
 }

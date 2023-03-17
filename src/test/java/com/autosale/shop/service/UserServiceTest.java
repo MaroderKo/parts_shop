@@ -35,7 +35,7 @@ public class UserServiceTest {
         when(repository.findAll()).thenReturn(users);
         List<User> returned = userService.findAll();
 
-        assertThat(returned, not(containsInAnyOrder(user1, user2, user3)));
+        assertThat(returned, containsInAnyOrder(user1, user2, user3));
     }
 
     @Test

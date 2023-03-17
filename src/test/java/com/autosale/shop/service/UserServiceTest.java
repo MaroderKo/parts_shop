@@ -27,11 +27,15 @@ public class UserServiceTest {
 
     @Test
     void findAll() {
-        List<User> users = List.of(generate(), generate(), generate());
+        User user1 = generate();
+        User user2 = generate();
+        User user3 = generate();
+
+        List<User> users = List.of(user1, user2, user3);
         when(repository.findAll()).thenReturn(users);
         List<User> returned = userService.findAll();
 
-        assertThat(returned, containsInAnyOrder(users.get(0), users.get(1), users.get(2)));
+        assertThat(returned, containsInAnyOrder(user1, user2, user3));
     }
 
     @Test

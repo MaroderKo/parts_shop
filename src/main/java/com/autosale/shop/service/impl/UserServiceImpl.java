@@ -2,13 +2,11 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
-import com.autosale.shop.repository.impl.UserRepositoryImpl;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import shop.domain.tables.Users;
 
 import java.util.List;
 

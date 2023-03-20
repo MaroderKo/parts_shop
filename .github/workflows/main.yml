@@ -15,8 +15,8 @@ jobs:
         run: sudo docker-compose build
       - name: Start database
         run: sudo docker-compose start
-      - name: Sleep for 10 seconds
-        run: sleep 10s
+      - name: Sleep for 5 seconds
+        run: sleep 5s
         shell: bash
       - name: Run build with Gradle Wrapper
         run: ./gradlew test

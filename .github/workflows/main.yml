@@ -9,7 +9,7 @@ jobs:
       - name: Checkout project sources
         uses: actions/checkout@v3
       - name: Build docker images
-        run: sudo docker-compose up
+        run: sudo docker-compose up --exit-code-from app
 
 
 

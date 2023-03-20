@@ -1,27 +1,9 @@
 version: '2.1'
 
 services:
-  app:
-    image: 'docker-spring-boot-postgres:latest'
-    build:
-      context: .
-    container_name: app
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/parts_shop
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-
   db:
     image: 'postgres:13.1-alpine'
     container_name: db
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     environment:
       - POSTGRES_DB=parts_shop
       - POSTGRES_USER=postgres

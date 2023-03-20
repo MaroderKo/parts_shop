@@ -11,8 +11,10 @@ jobs:
       - name: Setup Gralde
         uses: gradle/gradle-build-action@v2
 
-      - name: Build docker images
-        run: sudo docker-compose up
+      - name: Build database image
+        run: sudo docker-compose build
+      - name: Start database
+        run: sudo docker-compose start
       - name: Sleep for 10 seconds
         run: sleep 10s
         shell: bash

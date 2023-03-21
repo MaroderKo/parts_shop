@@ -1,17 +1,13 @@
 package com.autosale.shop.repository;
 
-import com.autosale.shop.generator.UserGenerator;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.impl.UserRepositoryImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +15,15 @@ import java.util.Optional;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserRepositoryTest {
     UserRepository repository = new UserRepositoryImpl(new DefaultDSLContext(SQLDialect.POSTGRES));
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     @Order(1)
-    private void findAll() {
+    void findAll() {
         List<User> inMemory = new ArrayList<>();
         User user = generate();
         inMemory.add(user);
@@ -37,7 +32,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    private void findById() {
+    void findById() {
         User user = generate();
         repository.save(user);
         assertThat(repository.findById(user.getId()), is(user));
@@ -45,7 +40,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    private void save() {
+    void save() {
         User user = generate();
         Optional<Integer> save = repository.save(user);
         assertThat(save.isPresent(), is(true));
@@ -53,7 +48,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    private void update() {
+    void update() {
         User user = generate();
         repository.save(user);
 
@@ -64,7 +59,7 @@ public class UserRepositoryTest {
     }
 
     @Test
-    private void deleteById() {
+    void deleteById() {
         User user = generate();
         repository.save(user);
 

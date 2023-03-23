@@ -1,10 +1,9 @@
 package com.autosale.shop.repository;
 
+import com.autosale.shop.configuration.TestBeanFactory;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.impl.UserRepositoryImpl;
-import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserRepositoryTest {
-    UserRepository repository = new UserRepositoryImpl(DSL.using("jdbc:postgresql://db:5432/parts_shop","postgres","postgres"));
+    UserRepository repository = new UserRepositoryImpl(TestBeanFactory.testDSLContext());
 
     @Test
     @Order(1)
@@ -36,7 +35,8 @@ public class UserRepositoryTest {
     void findById() {
         User user = generate();
         repository.save(user);
-        assertThat(repository.findById(user.getId()), is(user));
+        assertThat(repository.findById(user.getId()).isPresent(), is(true));
+        assertThat(repository.findById(user.getId()).get(), is(user));
 
     }
 
@@ -55,7 +55,7 @@ public class UserRepositoryTest {
 
         User newUser = new User(user.getId(), "ChangedUsername", user.getPassword(), user.getRole());
         repository.update(newUser);
-        assertThat(repository.findById(newUser.getId()), is(newUser));
+        assertThat(repository.findById(newUser.getId()).get(), is(newUser));
 
     }
 

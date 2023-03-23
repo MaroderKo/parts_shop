@@ -15,8 +15,7 @@ import java.util.Optional;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserRepositoryTest {
@@ -31,7 +30,7 @@ public class UserRepositoryTest {
         repository.save(user);
         repository.save(user1);
         repository.save(user2);
-        assertThat(repository.findAll(), containsInAnyOrder(user, user1, user2));
+        assertThat(repository.findAll(), hasItems(user, user1, user2));
     }
 
     @Test

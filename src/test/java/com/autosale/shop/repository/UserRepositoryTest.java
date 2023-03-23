@@ -35,8 +35,7 @@ public class UserRepositoryTest {
     void findById() {
         User user = generate();
         repository.save(user);
-        assertThat(repository.findById(user.getId()).isPresent(), is(true));
-        assertThat(repository.findById(user.getId()).get(), is(user));
+        assertThat(repository.findById(user.getId()), is(user));
 
     }
 
@@ -55,7 +54,7 @@ public class UserRepositoryTest {
 
         User newUser = new User(user.getId(), "ChangedUsername", user.getPassword(), user.getRole());
         repository.update(newUser);
-        assertThat(repository.findById(newUser.getId()).get(), is(newUser));
+        assertThat(repository.findById(newUser.getId()), is(newUser));
 
     }
 

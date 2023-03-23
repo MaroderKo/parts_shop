@@ -3,6 +3,7 @@ package com.autosale.shop.repository;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.impl.UserRepositoryImpl;
 import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -19,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserRepositoryTest {
-    UserRepository repository = new UserRepositoryImpl(new DefaultDSLContext(SQLDialect.POSTGRES));
+    UserRepository repository = new UserRepositoryImpl(DSL.using("jdbc:postgresql://db:5432/parts_shop","postgres","postgres"));
 
     @Test
     @Order(1)

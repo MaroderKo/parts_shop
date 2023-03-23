@@ -7,6 +7,6 @@ public class TestBeanFactory {
 
     public static DSLContext testDSLContext()
     {
-        return DSL.using("jdbc:gateway.docker.internal://localhost:5432/parts_shop","postgres","postgres");
+        return DSL.using("jdbc:postgresql://host.docker.internal:5432/parts_shop","postgres","postgres");
     }
 }

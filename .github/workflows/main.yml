@@ -28,10 +28,9 @@ jobs:
   cleaner:
     runs-on: self-hosted
     needs: test
-    if: ${{ jobs.test.steps.db_startup.conclusion == 'success' }}
+    if: ${{ always() }}
     steps:
       - name: db stopper
-        if: ${{  }}
         run: docker stop db
         shell: bash
       - name: docker cleaner

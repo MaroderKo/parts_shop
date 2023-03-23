@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
 public class UserRepositoryTest {
     private final UserRepository repository = new UserRepositoryImpl(TestBeanFactory.testDSLContext());
 
-    static User user;
+    private User user;
 
     @AfterEach
     void clear()

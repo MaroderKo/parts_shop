@@ -13,7 +13,6 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build database image
-        id: db_startup
         run: docker-compose up -d
 
       - name: Sleep for 5 seconds
@@ -26,13 +25,16 @@ jobs:
 
       - name: Run build with Gradle Wrapper
         run: ./gradlew test
-
+  cleaner:
+    runs-on: self-hosted
+    needs: test
+    if: ${{ jobs.test.steps.db_startup.conclusion == 'success' }}
+    steps:
       - name: db stopper
-        if: ${{ steps.db_startup.conclusion == 'success' }}
+        if: ${{  }}
         run: docker stop db
         shell: bash
       - name: docker cleaner
-        if: ${{ steps.db_startup.conclusion == 'success' }}
         run: docker rm -f -v db
         shell: bash
 

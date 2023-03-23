@@ -19,7 +19,7 @@ jobs:
         run: sleep 5s
         shell: bash
       - name: Show db logs
-        run: docker logs db
+        run: sudo docker logs db
         shell: bash
       - name: Run build with Gradle Wrapper
         run: ./gradlew test

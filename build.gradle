@@ -36,7 +36,7 @@ dependencies {
 }
 
 flyway {
-	url = 'jdbc:postgresql://db:5432/parts_shop'
+	url = 'jdbc:postgresql://localhost:5432/parts_shop'
 	user = 'postgres'
 	password = 'postgres'
 	schemas = ['public']

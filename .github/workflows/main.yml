@@ -15,8 +15,8 @@ jobs:
         run: sudo docker-compose build
       - name: Start database
         run: sudo docker-compose start
-      - name: Sleep for 5 seconds
-        run: sleep 5s
+      - name: Sleep for 30 seconds
+        run: sleep 30s
         shell: bash
       - name: Show db logs
         run: sudo docker logs db

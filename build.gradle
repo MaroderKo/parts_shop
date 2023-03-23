@@ -10,13 +10,6 @@ group = 'com.autosale'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
-build{
-	configurations{
-		properties{
-			"flyway.user"
-		}
-	}
-}
 
 repositories {
 	mavenCentral()

@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -24,18 +25,21 @@ public class UserRepositoryTest {
     @Test
     @Order(1)
     void findAll() {
-        List<User> inMemory = new ArrayList<>();
         User user = generate();
-        inMemory.add(user);
+        User user1 = generate();
+        User user2 = generate();
         repository.save(user);
-        assertThat(repository.findAll(), is(inMemory));
+        repository.save(user1);
+        repository.save(user2);
+        assertThat(repository.findAll(), containsInAnyOrder(user, user1, user2));
     }
 
     @Test
     void findById() {
         User user = generate();
         repository.save(user);
-        assertThat(repository.findById(user.getId()), is(user));
+        assertThat(repository.findById(user.getId()).isPresent(), is(true));
+        assertThat(repository.findById(user.getId()).get(), is(user));
 
     }
 
@@ -54,7 +58,7 @@ public class UserRepositoryTest {
 
         User newUser = new User(user.getId(), "ChangedUsername", user.getPassword(), user.getRole());
         repository.update(newUser);
-        assertThat(repository.findById(newUser.getId()), is(newUser));
+        assertThat(repository.findById(newUser.getId()).get(), is(newUser));
 
     }
 

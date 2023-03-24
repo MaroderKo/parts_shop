@@ -20,22 +20,15 @@ import static org.hamcrest.Matchers.*;
 public class UserRepositoryTest {
     private final UserRepository repository = new UserRepositoryImpl(TestBeanFactory.testDSLContext());
 
-    private User user;
-
     @AfterEach
     void clear()
     {
         TestBeanFactory.testDSLContext().delete(Users.USERS).execute();
     }
 
-    @BeforeEach
-    void setUp()
-    {
-        user = generate();
-    }
-
     @Test
     void findAll() {
+        User user = generate();
         User user1 = generate();
         User user2 = generate();
         repository.save(user);
@@ -46,6 +39,7 @@ public class UserRepositoryTest {
 
     @Test
     void findById() {
+        User user = generate();
         repository.save(user);
         assertThat(repository.findById(user.getId()).isPresent(), is(true));
         assertThat(repository.findById(user.getId()).get(), is(user));
@@ -54,6 +48,7 @@ public class UserRepositoryTest {
 
     @Test
     void save() {
+        User user = generate();
         Optional<Integer> save = repository.save(user);
         assertThat(save.isPresent(), is(true));
         assertThat(repository.findById(save.get()).get(), is(user));
@@ -61,6 +56,7 @@ public class UserRepositoryTest {
 
     @Test
     void update() {
+        User user = generate();
         repository.save(user);
 
         User newUser = new User(user.getId(), "ChangedUsername", user.getPassword(), user.getRole());
@@ -71,6 +67,7 @@ public class UserRepositoryTest {
 
     @Test
     void deleteById() {
+        User user = generate();
         repository.save(user);
 
         int i = repository.deleteById(user.getId());

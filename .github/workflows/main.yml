@@ -12,17 +12,29 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Build database image
-        run: sudo docker-compose build
-      - name: Start database
-        run: sudo docker-compose start
+        run: docker-compose up -d
+
       - name: Sleep for 5 seconds
         run: sleep 5s
         shell: bash
+
       - name: Show db logs
-        run: sudo docker logs db
+        run: docker logs db
         shell: bash
+
       - name: Run build with Gradle Wrapper
         run: ./gradlew test
+  cleaner:
+    runs-on: self-hosted
+    needs: test
+    if: ${{ always() }}
+    steps:
+      - name: db stopper
+        run: docker stop db
+        shell: bash
+      - name: docker cleaner
+        run: docker rm -f -v db
+        shell: bash
 
 
 

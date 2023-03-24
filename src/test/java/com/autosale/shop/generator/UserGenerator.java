@@ -11,6 +11,6 @@ public class UserGenerator {
     private static final Random rand = new Random();
     public static User generate()
     {
-        return new User(rand.nextInt(100), UUID.randomUUID().toString(), UUID.randomUUID().toString(), rand.nextBoolean() ? UserRole.USER : UserRole.ADMIN);
+        return new User(rand.nextInt(10000), UUID.randomUUID().toString(), UUID.randomUUID().toString(), rand.nextBoolean() ? UserRole.USER : UserRole.ADMIN);
     }
 }

@@ -13,9 +13,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -37,7 +34,7 @@ public class UserLayerE2ETest {
     }
 
     @Test
-    @Sql({"/e2e/users/example_one_user.sql"})
+    @Sql({"/e2e/users/insert_one_user.sql"})
     public void readUserById() {
         User returned = testRestTemplate.getForObject("http://localhost:" + port + "/users/1", User.class);
         assertThat(returned.getId(), is(1));
@@ -47,7 +44,7 @@ public class UserLayerE2ETest {
     }
 
     @Test
-    @Sql({"/e2e/users/example_one_user.sql"})
+    @Sql({"/e2e/users/insert_one_user.sql"})
     public void updateUser() {
         User user = new User(1, "ChangedUsername", "ChangedPassword", UserRole.USER);
         ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
@@ -55,7 +52,7 @@ public class UserLayerE2ETest {
     }
 
     @Test
-    @Sql({"/e2e/users/example_one_user.sql"})
+    @Sql({"/e2e/users/insert_one_user.sql"})
     public void deleteUser() {
         ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
         assertThat(result.getStatusCode().value(), is(200));
@@ -63,7 +60,7 @@ public class UserLayerE2ETest {
     }
 
     @Test
-    @Sql({"/e2e/users/example_three_users.sql"})
+    @Sql({"/e2e/users/insert_three_users.sql"})
     public void readAllUsers() {
         ResponseEntity<User[]> result = testRestTemplate.getForEntity("http://localhost:" + port + "/users", User[].class);
         User user1 = new User(1, "ExampleUser1", "ExamplePassword1", UserRole.ADMIN);

@@ -56,8 +56,7 @@ public class UserLayerE2ETest {
 
     @Test
     @Sql({"/e2e/users/example_one_user.sql"})
-    public void deleteUser()
-    {
+    public void deleteUser() {
         ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
         assertThat(result.getStatusCode().value(), is(200));
         assertThat(result.getBody(), equalTo("1"));
@@ -65,14 +64,13 @@ public class UserLayerE2ETest {
 
     @Test
     @Sql({"/e2e/users/example_three_users.sql"})
-    public void readAllUsers()
-    {
+    public void readAllUsers() {
         ResponseEntity<User[]> result = testRestTemplate.getForEntity("http://localhost:" + port + "/users", User[].class);
-        User user1 = new User(1,"ExampleUser1","ExamplePassword1",UserRole.ADMIN);
-        User user2 = new User(2,"ExampleUser2","ExamplePassword2",UserRole.ADMIN);
-        User user3 = new User(3,"ExampleUser3","ExamplePassword3",UserRole.ADMIN);
+        User user1 = new User(1, "ExampleUser1", "ExamplePassword1", UserRole.ADMIN);
+        User user2 = new User(2, "ExampleUser2", "ExamplePassword2", UserRole.ADMIN);
+        User user3 = new User(3, "ExampleUser3", "ExamplePassword3", UserRole.ADMIN);
 
-        assertThat(Arrays.asList(result.getBody()), containsInAnyOrder(user1,user2,user3));
+        assertThat(Arrays.asList(result.getBody()), containsInAnyOrder(user1, user2, user3));
     }
 
 

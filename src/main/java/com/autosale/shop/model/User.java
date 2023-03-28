@@ -12,7 +12,7 @@ public class User {
     UserRole role;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public User(@JsonProperty("id") Integer id, @JsonProperty("userName") String userName, @JsonProperty("passord") String password, @JsonProperty("role") UserRole role) {
+    public User(@JsonProperty("id") Integer id, @JsonProperty("userName") String userName, @JsonProperty("password") String password, @JsonProperty("role") UserRole role) {
         this.id = id;
         this.userName = userName;
         this.password = password;

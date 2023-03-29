@@ -8,8 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
@@ -29,10 +27,8 @@ public class SecurityConfiguration {
                 .disable()
                 .authorizeHttpRequests(matcher ->
                         matcher
-                                .requestMatchers(HttpMethod.GET, "/users").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/users/{id}").authenticated()
-                                .requestMatchers("/users*").hasRole("ADMIN")
-                                .requestMatchers("/users/{id}").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
+                                .requestMatchers("/users/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .httpBasic()
                 .and()

@@ -62,11 +62,11 @@ public class UserLayerE2ETest {
     @Test
     public void editUserWithoutPermission() {
         User user = generate();
-        ResponseEntity<String> result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
-        assertThat(result.getStatusCode().value(), is(403));
-        result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
         assertThat(result.getStatusCode().value(), is(403));
         result = testRestTemplate.withBasicAuth("user", "user").postForEntity("http://localhost:" + port + "/users", user, String.class);
+        assertThat(result.getStatusCode().value(), is(403));
+        result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
         assertThat(result.getStatusCode().value(), is(403));
     }
 

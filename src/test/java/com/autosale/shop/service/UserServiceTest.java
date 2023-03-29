@@ -7,13 +7,8 @@ import com.autosale.shop.repository.impl.UserRepositoryImpl;
 import com.autosale.shop.service.impl.UserServiceImpl;
 import org.jooq.exception.DataAccessException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,12 +18,11 @@ import java.util.Optional;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class UserServiceTest {
     private final UserRepository repository = Mockito.mock(UserRepositoryImpl.class);
@@ -62,7 +56,6 @@ public class UserServiceTest {
     @Test
     void findById_with_illegal_id() {
         when(repository.findById(-1)).thenReturn(Optional.empty());
-
         assertThrows(ResponseStatusException.class, () -> userService.findById(-1));
     }
 
@@ -70,9 +63,7 @@ public class UserServiceTest {
     void create() {
         User user = generate();
         when(passwordEncoder.encode(user.getPassword())).thenReturn("xxxxx");
-
         when(repository.save(new User(user.getId(), user.getUserName(), "xxxxx", user.getRole()))).thenReturn(Optional.of(user.getId()));
-
         assertThat(userService.create(user), is(user.getId()));
     }
 
@@ -98,7 +89,20 @@ public class UserServiceTest {
     void delete() {
         User user = generate();
         when(repository.deleteById(user.getId())).thenReturn(1);
-
         assertThat(userService.delete(user.getId()), is(1));
+    }
+
+    @Test
+    void findByUsername() {
+        User user = generate();
+        when(repository.findByUsername(user.getUserName())).thenReturn(Optional.of(user));
+        UserDetails expectedUserDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUserName())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
+        assertThat(userService.loadUserByUsername(user.getUserName()), is(expectedUserDetails));
+
+
     }
 }

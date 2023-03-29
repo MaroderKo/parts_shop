@@ -21,8 +21,7 @@ public class UserRepositoryTest {
     private final UserRepository repository = new UserRepositoryImpl(TestBeanFactory.testDSLContext());
 
     @AfterEach
-    void clear()
-    {
+    void clear() {
         TestBeanFactory.testDSLContext().delete(Users.USERS).execute();
     }
 
@@ -58,7 +57,6 @@ public class UserRepositoryTest {
     void update() {
         User user = generate();
         repository.save(user);
-
         User newUser = new User(user.getId(), "ChangedUsername", user.getPassword(), user.getRole());
         repository.update(newUser);
         assertThat(repository.findById(newUser.getId()).get(), is(newUser));
@@ -69,7 +67,6 @@ public class UserRepositoryTest {
     void deleteById() {
         User user = generate();
         repository.save(user);
-
         int i = repository.deleteById(user.getId());
         assertThat(i, is(1));
         assertThat(repository.findById(user.getId()).isPresent(), is(false));

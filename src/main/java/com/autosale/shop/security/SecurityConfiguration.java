@@ -1,5 +1,6 @@
 package com.autosale.shop.security;
 
+import com.autosale.shop.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,10 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfiguration {
 
-    private final UserDetailService userDetailService;
+    private final UserService userService;
 
-    public SecurityConfiguration(UserDetailService userDetailService) {
-        this.userDetailService = userDetailService;
+    public SecurityConfiguration(UserService userService) {
+        this.userService = userService;
     }
 
     @Bean
@@ -41,9 +42,8 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        builder
-                .userDetailsService(userDetailService)
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(userService)
                 .and()
                 .inMemoryAuthentication()
                 .withUser("user")
@@ -52,15 +52,10 @@ public class SecurityConfiguration {
                 .and()
                 .withUser("admin")
                 .password("$2a$12$Fv28Z52dz4jOxByPKCBdOOXar1Np9DXlfyz0sv0HUo0z5AYkIQ/k.")
-                .roles("ADMIN");
-
-
-        return builder.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+                .roles("ADMIN")
+                .and()
+                .and()
+                .build();
     }
 
 

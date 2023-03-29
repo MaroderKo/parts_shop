@@ -58,17 +58,17 @@ public class Users extends TableImpl<UsersRecord> {
     /**
      * The column <code>public.users.user_name</code>.
      */
-    public final TableField<UsersRecord, String> USER_NAME = createField(DSL.name("user_name"), SQLDataType.VARCHAR(50).nullable(false), this, "");
+    public final TableField<UsersRecord, String> USER_NAME = createField(DSL.name("user_name"), SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.users.password</code>.
      */
-    public final TableField<UsersRecord, String> PASSWORD = createField(DSL.name("password"), SQLDataType.VARCHAR(25).nullable(false), this, "");
+    public final TableField<UsersRecord, String> PASSWORD = createField(DSL.name("password"), SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.users.role</code>.
      */
-    public final TableField<UsersRecord, String> ROLE = createField(DSL.name("role"), SQLDataType.VARCHAR(25).nullable(false), this, "");
+    public final TableField<UsersRecord, String> ROLE = createField(DSL.name("role"), SQLDataType.VARCHAR.nullable(false), this, "");
 
     private Users(Name alias, Table<UsersRecord> aliased) {
         this(alias, aliased, null);

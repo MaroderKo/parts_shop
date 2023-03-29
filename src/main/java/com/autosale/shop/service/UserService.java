@@ -1,10 +1,11 @@
 package com.autosale.shop.service;
 
 import com.autosale.shop.model.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     List<User> findAll();
 
     User findById(int id);

@@ -29,14 +29,14 @@ public class UserLayerE2ETest {
     @Test
     public void createUserTest() {
         User user = generate();
-        ResponseEntity<String> result = testRestTemplate.postForEntity("http://localhost:" + port + "/users", user, String.class);
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin","admin").postForEntity("http://localhost:" + port + "/users", user, String.class);
         assertThat(result.getStatusCode().value(), is(200));
     }
 
     @Test
     @Sql({"/e2e/users/insert_one_user.sql"})
     public void readUserById() {
-        User returned = testRestTemplate.getForObject("http://localhost:" + port + "/users/1", User.class);
+        User returned = testRestTemplate.withBasicAuth("user","user").getForObject("http://localhost:" + port + "/users/1", User.class);
         assertThat(returned.getId(), is(1));
         assertThat(returned.getUserName(), is("ExampleUser"));
         assertThat(returned.getPassword(), is("ExamplePassword"));
@@ -47,22 +47,36 @@ public class UserLayerE2ETest {
     @Sql({"/e2e/users/insert_one_user.sql"})
     public void updateUser() {
         User user = new User(1, "ChangedUsername", "ChangedPassword", UserRole.USER);
-        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin","admin").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
         assertThat(result.getStatusCode().value(), is(200));
+    }
+
+    @Test
+    public void updateUserWithoutPermission() {
+        User user = new User(1, "ChangedUsername", "ChangedPassword", UserRole.USER);
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("user","user").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
+        assertThat(result.getStatusCode().value(), is(403));
     }
 
     @Test
     @Sql({"/e2e/users/insert_one_user.sql"})
     public void deleteUser() {
-        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin","admin").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
         assertThat(result.getStatusCode().value(), is(200));
         assertThat(result.getBody(), equalTo("1"));
     }
 
     @Test
+    @Sql({"/e2e/users/insert_one_user.sql"})
+    public void deleteUserWithoutPermission() {
+        ResponseEntity<String> result = testRestTemplate.withBasicAuth("user","user").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+        assertThat(result.getStatusCode().value(), is(403));
+    }
+
+    @Test
     @Sql({"/e2e/users/insert_three_users.sql"})
     public void readAllUsers() {
-        ResponseEntity<User[]> result = testRestTemplate.getForEntity("http://localhost:" + port + "/users", User[].class);
+        ResponseEntity<User[]> result = testRestTemplate.withBasicAuth("user","user").getForEntity("http://localhost:" + port + "/users", User[].class);
         User user1 = new User(1, "ExampleUser1", "ExamplePassword1", UserRole.ADMIN);
         User user2 = new User(2, "ExampleUser2", "ExamplePassword2", UserRole.ADMIN);
         User user3 = new User(3, "ExampleUser3", "ExamplePassword3", UserRole.ADMIN);

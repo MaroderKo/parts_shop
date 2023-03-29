@@ -33,6 +33,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByUsername(String userName) {
+        return dsl.selectFrom(USERS)
+                .where(USERS.USER_NAME.eq(userName))
+                .fetchOptionalInto(User.class);
+    }
+
+    @Override
     public Optional<Integer> save(User user) {
         return dsl.insertInto(USERS)
                 .set(dsl.newRecord(USERS, user))

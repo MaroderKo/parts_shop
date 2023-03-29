@@ -7,7 +7,15 @@ import com.autosale.shop.repository.impl.UserRepositoryImpl;
 import com.autosale.shop.service.impl.UserServiceImpl;
 import org.jooq.exception.DataAccessException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -20,10 +28,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 public class UserServiceTest {
     private final UserRepository repository = Mockito.mock(UserRepositoryImpl.class);
-    private final UserService userService = new UserServiceImpl(repository);
+
+    private final PasswordEncoder passwordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
+
+    private final UserService userService = new UserServiceImpl(repository, passwordEncoder);
 
     @Test
     void findAll() {
@@ -57,7 +69,9 @@ public class UserServiceTest {
     @Test
     void create() {
         User user = generate();
-        when(repository.save(user)).thenReturn(Optional.of(user.getId()));
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("xxxxx");
+
+        when(repository.save(new User(user.getId(), user.getUserName(), "xxxxx", user.getRole()))).thenReturn(Optional.of(user.getId()));
 
         assertThat(userService.create(user), is(user.getId()));
     }
@@ -65,7 +79,8 @@ public class UserServiceTest {
     @Test
     void create_with_broken_database_connection() {
         User user = generate();
-        when(repository.save(user)).thenThrow(DataAccessException.class);
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("xxxxx");
+        when(repository.save(new User(user.getId(), user.getUserName(), "xxxxx", user.getRole()))).thenThrow(DataAccessException.class);
         assertThrows(DataAccessException.class,
                 () -> userService.create(user));
     }
@@ -73,9 +88,10 @@ public class UserServiceTest {
     @Test
     void edit() {
         User user = generate();
+        when(passwordEncoder.encode(user.getPassword())).thenReturn("xxxxx");
         userService.edit(user);
-
-        verify(repository).update(user);
+        verify(passwordEncoder).encode(user.getPassword());
+        verify(repository).update(new User(user.getId(), user.getUserName(), "xxxxx", user.getRole()));
     }
 
     @Test

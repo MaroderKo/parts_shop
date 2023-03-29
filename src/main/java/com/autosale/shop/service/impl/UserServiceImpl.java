@@ -5,6 +5,7 @@ import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
     @Override
     public List<User> findAll() {
@@ -22,29 +24,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int id)
-    {
+    public User findById(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cannot find user with id "+id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cannot find user with id " + id));
     }
 
     @Override
     public Integer create(User user) {
-
-        return repository.save(user)
+        return repository.save(passwordEncode(user))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user to database"));
     }
 
     @Override
     public void edit(User user) {
-        repository.update(user);
+        repository.update(passwordEncode(user));
     }
 
     @Override
-    public int delete(int id)
-    {
+    public int delete(int id) {
         return repository.deleteById(id);
     }
 
+    private User passwordEncode(User user) {
+        return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
+    }
 
 }

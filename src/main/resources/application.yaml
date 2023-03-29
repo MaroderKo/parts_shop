@@ -9,3 +9,8 @@ spring:
 server:
   error:
     include-message: on-param
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

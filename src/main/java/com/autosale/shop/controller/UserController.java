@@ -22,12 +22,10 @@ public class UserController {
         return userServiceImpl.findAll();
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Integer> create(@RequestBody User user) {
 
         return ResponseEntity.ok(userServiceImpl.create(user));
-
-
     }
 
     @GetMapping("/{id}")

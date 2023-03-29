@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
@@ -48,10 +48,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return repository.deleteById(id);
     }
 
-    private User copyWithPasswordEncoded(User user) {
-        return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -62,4 +58,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .roles(user.getRole().name())
                 .build();
     }
+
+    private User copyWithPasswordEncoded(User user) {
+        return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
+    }
+
+
 }

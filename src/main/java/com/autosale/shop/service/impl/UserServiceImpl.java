@@ -2,7 +2,7 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.autosale.shop.security.JwtTokenUtil;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Bad credentials"));
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -59,6 +64,18 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public User returnVerifiedUser(String username, String password)
+    {
+        User user = repository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials"));
+        if (encoder.matches(password,user.getPassword()))
+        {
+            return user;
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials");
+        }
+    }
     private User copyWithPasswordEncoded(User user) {
         return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
     }

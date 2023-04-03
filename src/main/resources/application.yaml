@@ -9,6 +9,8 @@ spring:
 server:
   error:
     include-message: on-param
+jwt:
+  secret: supersecretpassword123456789101101
 logging:
   level:
     org:

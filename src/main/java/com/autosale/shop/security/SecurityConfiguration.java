@@ -34,8 +34,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
                                 .requestMatchers("/users/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST,"/login").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/verify").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/refresh").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/tokens/verify").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/tokens/refresh").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAt(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .build();

@@ -18,5 +18,5 @@ public interface UserService extends UserDetailsService {
 
     User findByUsername(String username);
 
-    User returnVerifiedUser(String username, String password);
+    User getVerifiedUser(String username, String password);
 }

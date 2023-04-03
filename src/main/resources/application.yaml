@@ -11,6 +11,10 @@ server:
     include-message: on-param
 jwt:
   secret: supersecretpassword123456789101101
+#  access token lifetime in minutes
+  access_token_lifetime: 10
+#  refresh token lifetime in hours
+  refresh_token_lifetime: 1
 logging:
   level:
     org:

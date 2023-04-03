@@ -2,7 +2,6 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
-import com.autosale.shop.security.JwtTokenUtil;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -65,14 +64,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User returnVerifiedUser(String username, String password)
-    {
+    public User getVerifiedUser(String username, String password) {
         User user = repository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials"));
-        if (encoder.matches(password,user.getPassword()))
-        {
+        if (encoder.matches(password, user.getPassword())) {
             return user;
-        }
-        else {
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials");
         }
     }

@@ -1,25 +1,25 @@
 package com.autosale.shop.service.impl;
 
-import com.autosale.shop.model.JwtTokensDAO;
+import com.autosale.shop.model.JwtTokensDTO;
 import com.autosale.shop.model.User;
 import com.autosale.shop.service.JwtTokenService;
-import com.autosale.shop.service.SecurityService;
+import com.autosale.shop.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class SecurityServiceImpl implements SecurityService {
+public class LoginServiceImpl implements LoginService {
 
     private final JwtTokenService jwtTokenService;
 
     @Override
-    public JwtTokensDAO generateTokensByUserCredentials(User user) {
+    public JwtTokensDTO generateTokensByUserCredentials(User user) {
         return jwtTokenService.generateTokensPair(user);
     }
 
     @Override
-    public JwtTokensDAO generateTokensByRefreshToken(String token) {
+    public JwtTokensDTO generateTokensByRefreshToken(String token) {
         return jwtTokenService.generateTokensFromRefreshToken(token);
     }
 

@@ -55,7 +55,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUserName())
                 .password(user.getPassword())
@@ -68,9 +67,9 @@ public class UserServiceImpl implements UserService {
         User user = repository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials"));
         if (encoder.matches(password, user.getPassword())) {
             return user;
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials");
         }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials");
+
     }
     private User copyWithPasswordEncoded(User user) {
         return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());

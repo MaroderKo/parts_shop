@@ -18,9 +18,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenService jwtTokenService;
+    private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
-    public static final String JwtTokenPrefix = "Bearer ";
+    private final JwtTokenService jwtTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,8 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String extractToken(HttpServletRequest request) {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header != null && header.startsWith(JwtTokenPrefix)) {
-            return header.replace(JwtTokenPrefix, "");
+        if (header != null && header.startsWith(JWT_TOKEN_PREFIX)) {
+            return header.replace(JWT_TOKEN_PREFIX, "");
         }
         return null;
     }

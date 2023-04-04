@@ -1,6 +1,6 @@
 package com.autosale.shop.service.impl;
 
-import com.autosale.shop.model.JwtTokensDAO;
+import com.autosale.shop.model.JwtTokensDTO;
 import com.autosale.shop.model.User;
 import com.autosale.shop.model.UserRole;
 import com.autosale.shop.service.JwtTokenService;
@@ -28,66 +28,65 @@ import java.util.UUID;
 @Service
 public class JwtTokenServiceImpl implements JwtTokenService {
 
-    private final String SECRET_KEY;
+    private final String secretKey;
 
     private final UserService userService;
 
-    private final int ACCESS_TOKEN_LIFETIME;
+    private final int accessTokenTTL;
 
-    private final int REFRESH_TOKEN_LIFETIME;
+    private final int refreshTokenTTL;
 
     public JwtTokenServiceImpl(@Value("${jwt.secret}") String secret_key, UserService userService, @Value("${jwt.access_token_lifetime}") int access_token_lifetime, @Value("${jwt.refresh_token_lifetime}") int refresh_token_lifetime) {
-        SECRET_KEY = secret_key;
+        secretKey = secret_key;
         this.userService = userService;
-        ACCESS_TOKEN_LIFETIME = access_token_lifetime;
-        REFRESH_TOKEN_LIFETIME = refresh_token_lifetime;
+        accessTokenTTL = access_token_lifetime;
+        refreshTokenTTL = refresh_token_lifetime;
     }
 
     @Override
-    public JwtTokensDAO generateTokensPair(User user) {
-        if (user.getId() == null) {
+    public JwtTokensDTO generateTokensPair(User user) {
+        if (user.getId() == null) { // id might be null if it`s login-password authentication
             user = userService.getVerifiedUser(user.getUserName(), user.getPassword());
         }
-        JwtBuilder jwtBuilder = Jwts.builder().claim("id", user.getId().toString())
-                .claim("username", user.getUserName())
-                .claim("role", user.getRole())
-                .setId(UUID.randomUUID().toString())
-                .setSubject(String.format("%s,%s", user.getId(), user.getUserName()))
-                .setIssuedAt(new Date()).setExpiration(Date.from(Instant.now().plus(ACCESS_TOKEN_LIFETIME, ChronoUnit.MINUTES)))
-                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()));
-        String accessToken = jwtBuilder.compact();
-        String refreshToken = jwtBuilder
-                .claim("type", "refresh")
-                .setIssuedAt(new Date()).setExpiration(Date.from(Instant.now().plus(REFRESH_TOKEN_LIFETIME, ChronoUnit.HOURS)))
-                .compact();
-        return new JwtTokensDAO(accessToken,refreshToken);
+        return generateTokensFromUser(user);
     }
 
 
     @Override
     public boolean isValidToken(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()).build().parseClaimsJws(token).getBody();
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         User user = userService.findById(Integer.parseInt(claims.get("id", String.class)));
-
         if (user == null) {
             return false;
         }
-
         return claims.get("username", String.class).equals(user.getUserName()) && claims.get("role", String.class).equals(user.getRole().name()) && claims.getExpiration().after(new Date());
     }
 
     @Override
-    public Authentication getAuthentication(String token)
-    {
-        Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()).build().parseClaimsJws(token).getBody();
-
-        return new UsernamePasswordAuthenticationToken(claims.get("id", String.class),"",getAuthorities(claims));
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return new UsernamePasswordAuthenticationToken(claims.get("id", String.class), "", getAuthorities(claims));
     }
 
     @Override
-    public JwtTokensDAO generateTokensFromRefreshToken(String refreshToken) throws UnsupportedJwtException {
-        Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY.getBytes()).build().parseClaimsJws(refreshToken).getBody();
-        if (!claims.get("type", String.class).equals("refresh")) {
+    public JwtTokensDTO generateTokensFromRefreshToken(String refreshToken) throws UnsupportedJwtException {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
+                .parseClaimsJws(refreshToken)
+                .getBody();
+        if (!"refresh".equals(claims.get("type", String.class))) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Jwt token is not a refresh token");
         }
         return generateTokensPair(new User(
@@ -99,5 +98,21 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     private List<GrantedAuthority> getAuthorities(Claims claims) {
         return List.of(new SimpleGrantedAuthority("ROLE_" + claims.get("role", String.class)));
+    }
+
+    private JwtTokensDTO generateTokensFromUser(User user) {
+        JwtBuilder jwtBuilder = Jwts.builder().claim("id", user.getId().toString())
+                .claim("username", user.getUserName())
+                .claim("role", user.getRole())
+                .setId(UUID.randomUUID().toString())
+                .setSubject(String.format("%s,%s", user.getId(), user.getUserName()))
+                .setIssuedAt(new Date()).setExpiration(Date.from(Instant.now().plus(accessTokenTTL, ChronoUnit.MINUTES)))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()));
+        String accessToken = jwtBuilder.compact();
+        String refreshToken = jwtBuilder
+                .claim("type", "refresh")
+                .setIssuedAt(new Date()).setExpiration(Date.from(Instant.now().plus(refreshTokenTTL, ChronoUnit.HOURS)))
+                .compact();
+        return new JwtTokensDTO(accessToken, refreshToken);
     }
 }

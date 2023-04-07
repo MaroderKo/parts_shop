@@ -29,13 +29,13 @@ public class SecurityConfiguration {
         return http
                 .csrf()
                 .disable()
+                .sessionManagement()
+                .disable()
                 .authorizeHttpRequests(matcher ->
                         matcher
                                 .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
                                 .requestMatchers("/users/**").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST,"/login").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/tokens/verify").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/tokens/refresh").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAt(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .build();

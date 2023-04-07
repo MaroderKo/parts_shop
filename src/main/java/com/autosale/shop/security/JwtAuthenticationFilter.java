@@ -1,6 +1,6 @@
 package com.autosale.shop.security;
 
-import com.autosale.shop.service.LoginService;
+import com.autosale.shop.service.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String JWT_TOKEN_PREFIX = "Bearer ";
 
-    private final LoginService loginService;
+    private final AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,8 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<String> tokenOptional = extractToken(request);
         if (tokenOptional.isPresent()) {
             String token = tokenOptional.get();
-            if (loginService.isValidToken(token)) {
-                Authentication authentication = loginService.getAuthentication(token);
+            if (authenticationService.isAuthenticated(token)) {
+                Authentication authentication = authenticationService.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }

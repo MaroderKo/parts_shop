@@ -2,8 +2,8 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.JwtTokensDTO;
 import com.autosale.shop.model.User;
+import com.autosale.shop.service.AuthenticationService;
 import com.autosale.shop.service.JwtTokenService;
-import com.autosale.shop.service.LoginService;
 import com.autosale.shop.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +18,15 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class LoginServiceImpl implements LoginService {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final JwtTokenService jwtTokenService;
     private final UserService userService;
 
     @Override
     public JwtTokensDTO generateTokensByUserCredentials(User user) {
-        if (user.getId() == null) { // id might be null if it`s login-password authentication
-            user = userService.getVerifiedUser(user.getUserName(), user.getPassword());
-        }
+
+        user = userService.getVerifiedUser(user.getUserName(), user.getPassword());
         return jwtTokenService.generateTokensPair(user);
     }
 
@@ -37,8 +36,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public boolean isValidToken(String access_token) {
-        Claims claims = jwtTokenService.getClaimsFromToken(access_token);
+    public boolean isAuthenticated(String token) {
+        Claims claims = jwtTokenService.getClaimsFromToken(token);
         User user = userService.findById(Integer.parseInt(claims.get("id", String.class)));
         if (user == null) {
             return false;

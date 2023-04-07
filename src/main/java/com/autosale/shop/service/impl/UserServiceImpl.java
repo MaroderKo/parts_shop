@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,11 +65,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getVerifiedUser(String username, String password) {
-        User user = repository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials"));
-        if (encoder.matches(password, user.getPassword())) {
-            return user;
+        Optional<User> user = repository.findByUsername(username);
+        if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
+            return user.get();
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad credentials");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad credentials");
 
     }
     private User copyWithPasswordEncoded(User user) {

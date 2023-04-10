@@ -15,4 +15,8 @@ public interface UserService extends UserDetailsService {
     void edit(User user);
 
     int delete(int id);
+
+    User findByUsername(String username);
+
+    User getVerifiedUser(String username, String password);
 }

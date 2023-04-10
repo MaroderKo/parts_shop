@@ -5,7 +5,9 @@ import com.autosale.shop.service.UserService;
 import com.autosale.shop.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.jooq.exception.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,7 +55,7 @@ public class UserController {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handleException(Exception e) {
+    public ResponseEntity<String> dataAccessExceptionHandle(Exception e) {
         return ResponseEntity.status(501).body(e.getMessage());
     }
 }

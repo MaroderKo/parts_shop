@@ -8,16 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.Map;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"JWT_TOKEN_SECRET=supersecretpassword123456789101101"})
 public class UserLayerE2ETest {
 
     @LocalServerPort
@@ -27,59 +31,78 @@ public class UserLayerE2ETest {
     private TestRestTemplate testRestTemplate;
 
     @Test
+    @Sql({"/e2e/users/insert_one_admin_user.sql"})
     public void createUserTest() {
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("admin", "admin");
         User user = generate();
-        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin", "admin").postForEntity("http://localhost:" + port + "/users", user, String.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.POST, new HttpEntity<>(user, headers), String.class);
         assertThat(result.getStatusCode().value(), is(200));
     }
 
     @Test
     @Sql({"/e2e/users/insert_one_user.sql"})
     public void readUserById() {
-        User returned = testRestTemplate.withBasicAuth("user", "user").getForObject("http://localhost:" + port + "/users/1", User.class);
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("user", "user");
+        ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1",HttpMethod.GET, new HttpEntity<>(headers), User.class);
+        User returned = result.getBody();
+        assertThat(returned, notNullValue());
         assertThat(returned.getId(), is(1));
-        assertThat(returned.getUserName(), is("ExampleUser"));
-        assertThat(returned.getPassword(), is("ExamplePassword"));
-        assertThat(returned.getRole(), is(UserRole.ADMIN));
+        assertThat(returned.getUserName(), is("user"));
+        assertThat(returned.getPassword(), is("$2a$12$rZ9Rc0mMxCc04zAQ1Hs9zepxe71BuccmovfTRvuHjEWVr2fbz2PZK"));
+        assertThat(returned.getRole(), is(UserRole.USER));
     }
 
     @Test
-    @Sql({"/e2e/users/insert_one_user.sql"})
+    @Sql({"/e2e/users/insert_one_admin_user.sql"})
     public void updateUser() {
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("admin", "admin");
         User user = new User(1, "ChangedUsername", "ChangedPassword", UserRole.USER);
-        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin", "admin").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user, headers), String.class);
         assertThat(result.getStatusCode().value(), is(200));
     }
 
     @Test
-    @Sql({"/e2e/users/insert_one_user.sql"})
+    @Sql({"/e2e/users/insert_one_admin_user.sql"})
     public void deleteUser() {
-        ResponseEntity<String> result = testRestTemplate.withBasicAuth("admin", "admin").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("admin", "admin");
+        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
         assertThat(result.getStatusCode().value(), is(200));
         assertThat(result.getBody(), equalTo("1"));
     }
 
     @Test
+    @Sql("/e2e/users/insert_one_user.sql")
     public void editUserWithoutPermission() {
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("user", "user");
         User user = generate();
-        ResponseEntity<String> result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user), String.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.PUT, new HttpEntity<>(user, headers), String.class);
         assertThat(result.getStatusCode().value(), is(403));
-        result = testRestTemplate.withBasicAuth("user", "user").postForEntity("http://localhost:" + port + "/users", user, String.class);
+        result = testRestTemplate.exchange("http://localhost:" + port + "/users",HttpMethod.POST, new HttpEntity<>(user,headers), String.class);
         assertThat(result.getStatusCode().value(), is(403));
-        result = testRestTemplate.withBasicAuth("user", "user").exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, HttpEntity.EMPTY, String.class);
+        result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
         assertThat(result.getStatusCode().value(), is(403));
     }
 
     @Test
     @Sql({"/e2e/users/insert_three_users.sql"})
     public void readAllUsers() {
-        ResponseEntity<User[]> result = testRestTemplate.withBasicAuth("user", "user").getForEntity("http://localhost:" + port + "/users", User[].class);
-        User user1 = new User(1, "ExampleUser1", "ExamplePassword1", UserRole.ADMIN);
-        User user2 = new User(2, "ExampleUser2", "ExamplePassword2", UserRole.ADMIN);
-        User user3 = new User(3, "ExampleUser3", "ExamplePassword3", UserRole.ADMIN);
+        HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("ExampleUser1", "ExamplePassword1");
+        ResponseEntity<User[]> result = testRestTemplate.exchange("http://localhost:" + port + "/users",HttpMethod.GET,new HttpEntity<>(headers), User[].class);
+        User user1 = new User(1, "ExampleUser1", "$2a$12$R8seoU4Vqpb7OMhz8APn.OmWh8PqKgu.WmZwBPjNuESEzU8OtywRq", UserRole.ADMIN);
+        User user2 = new User(2, "ExampleUser2", "$2a$12$HMPtzxWMBKdBMCpOBJkX1u6jhJaJhZtGD0ntMt9.OoS1LdpMCbwcW", UserRole.ADMIN);
+        User user3 = new User(3, "ExampleUser3", "$2a$12$xUC.trmEPGjMpFmWy31P3.a3WCogiEcnS/glAkKyXYuTyjMDBbqry", UserRole.ADMIN);
 
         assertThat(Arrays.asList(result.getBody()), containsInAnyOrder(user1, user2, user3));
     }
 
+    private HttpHeaders getTokenFromCredentialsAndReturnHttpHeaders(String login, String password)
+    {
+        User baseUser = new User(null, login, password, null);
+        ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});
+        String accessToken = tokens.getBody().get("access_token");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        return headers;
+    }
 
 }

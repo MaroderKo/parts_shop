@@ -1,4 +1,4 @@
 truncate users;
-insert into users(id,user_name,password,role) VALUES (1,'ExampleUser1','ExamplePassword1','ADMIN');
-insert into users(id,user_name,password,role) VALUES (2,'ExampleUser2','ExamplePassword2','ADMIN');
-insert into users(id,user_name,password,role) VALUES (3,'ExampleUser3','ExamplePassword3','ADMIN');
+insert into users(id,user_name,password,role) VALUES (1,'ExampleUser1','$2a$12$R8seoU4Vqpb7OMhz8APn.OmWh8PqKgu.WmZwBPjNuESEzU8OtywRq','ADMIN');
+insert into users(id,user_name,password,role) VALUES (2,'ExampleUser2','$2a$12$HMPtzxWMBKdBMCpOBJkX1u6jhJaJhZtGD0ntMt9.OoS1LdpMCbwcW','ADMIN');
+insert into users(id,user_name,password,role) VALUES (3,'ExampleUser3','$2a$12$xUC.trmEPGjMpFmWy31P3.a3WCogiEcnS/glAkKyXYuTyjMDBbqry','ADMIN');

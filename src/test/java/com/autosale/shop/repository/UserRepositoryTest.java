@@ -3,24 +3,24 @@ package com.autosale.shop.repository;
 import com.autosale.shop.configuration.TestBeanFactory;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.impl.UserRepositoryImpl;
-import org.apache.naming.factory.BeanFactory;
-import org.jooq.impl.DSL;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import structure.tables.Users;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 
 
 public class UserRepositoryTest {
     private final UserRepository repository = new UserRepositoryImpl(TestBeanFactory.testDSLContext());
 
     @AfterEach
+    @BeforeEach
     void clear() {
         TestBeanFactory.testDSLContext().delete(Users.USERS).execute();
     }
@@ -43,6 +43,16 @@ public class UserRepositoryTest {
         assertThat(repository.findById(user.getId()).isPresent(), is(true));
         assertThat(repository.findById(user.getId()).get(), is(user));
 
+    }
+
+    @Test
+    void findByUsername() {
+        User user = generate();
+        repository.save(user);
+
+        Optional<User> userOptional = repository.findByUsername(user.getUserName());
+        assertThat(userOptional.isPresent(), is(true));
+        assertThat(userOptional.get(), is(user));
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.autosale.shop.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
@@ -11,7 +10,6 @@ public class User {
     String password;
     UserRole role;
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public User(@JsonProperty("id") Integer id, @JsonProperty("userName") String userName, @JsonProperty("password") String password, @JsonProperty("role") UserRole role) {
         this.id = id;
         this.userName = userName;

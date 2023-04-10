@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -16,8 +17,11 @@ public class SecurityConfiguration {
 
     private final UserService userService;
 
-    public SecurityConfiguration(UserService userService) {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfiguration(UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.userService = userService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Bean
@@ -25,14 +29,15 @@ public class SecurityConfiguration {
         return http
                 .csrf()
                 .disable()
+                .sessionManagement()
+                .disable()
                 .authorizeHttpRequests(matcher ->
                         matcher
                                 .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
                                 .requestMatchers("/users/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
                                 .anyRequest().authenticated())
-                .httpBasic()
-                .and()
-                .authenticationManager(authManager)
+                .addFilterAt(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .build();
     }
 

@@ -4,6 +4,9 @@ import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "user", key = "#id")
     public User findById(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cannot find user with id " + id));
@@ -39,16 +43,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "user", key = "#user.id"),
+            @CacheEvict(value = "userByUsername", key = "#user.userName"),
+    })
     public void edit(User user) {
         repository.update(copyWithPasswordEncoded(user));
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "user", key = "#id"),
+            @CacheEvict(value = "userByUsername", allEntries = true)
+    })
     public int delete(int id) {
         return repository.deleteById(id);
     }
 
     @Override
+    @Cacheable("userByUsername")
     public User findByUsername(String username) {
         return repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Bad credentials"));
     }

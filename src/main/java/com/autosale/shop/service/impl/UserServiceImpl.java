@@ -84,10 +84,4 @@ public class UserServiceImpl implements UserService {
         return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
     }
 
-    @CacheEvict("user")
-    @Scheduled(fixedRate = 1L, timeUnit = TimeUnit.DAYS)
-    public void cacheClear() {
-    }
-
-
 }

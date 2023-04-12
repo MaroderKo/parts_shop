@@ -37,7 +37,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(value = "user", key = "#user.userName")
     public Integer create(User user) {
         return repository.save(copyWithPasswordEncoded(user))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save user to database"));
@@ -86,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @CacheEvict("user")
-    @Scheduled(fixedRate = 10L, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(fixedRate = 1L, timeUnit = TimeUnit.DAYS)
     public void cacheClear() {
     }
 

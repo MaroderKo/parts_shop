@@ -32,8 +32,14 @@ jobs:
       - name: db stopper
         run: docker stop db
         shell: bash
-      - name: docker cleaner
+      - name: db cleaner
         run: docker rm -f -v db
+        shell: bash
+      - name: redis stopper
+        run: docker stop redis
+        shell: bash
+      - name: redis cleaner
+        run: docker rm -f -v redis
         shell: bash
 
 

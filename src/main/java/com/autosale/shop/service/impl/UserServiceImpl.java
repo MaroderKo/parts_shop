@@ -4,7 +4,10 @@ import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +43,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "user", key = "#user.userName")
     public void edit(User user) {
         repository.update(copyWithPasswordEncoded(user));
     }
 
     @Override
+    @CacheEvict(value = "user", allEntries = true)
     public int delete(int id) {
         return repository.deleteById(id);
     }
@@ -64,6 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "user", key = "#username")
     public User getVerifiedUser(String username, String password) {
         Optional<User> user = repository.findByUsername(username);
         if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
@@ -72,9 +79,9 @@ public class UserServiceImpl implements UserService {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad credentials");
 
     }
+
     private User copyWithPasswordEncoded(User user) {
         return new User(user.getId(), user.getUserName(), encoder.encode(user.getPassword()), user.getRole());
     }
-
 
 }

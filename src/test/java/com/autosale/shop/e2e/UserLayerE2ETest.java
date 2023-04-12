@@ -9,10 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Map;
@@ -65,7 +62,7 @@ public class UserLayerE2ETest {
     @Sql({"/e2e/users/insert_one_admin_user.sql"})
     public void deleteUser() {
         HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("admin", "admin");
-        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/1", HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
+        ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + port + "/users/2", HttpMethod.DELETE, new HttpEntity<>(headers), String.class);
         assertThat(result.getStatusCode().value(), is(200));
         assertThat(result.getBody(), equalTo("1"));
     }
@@ -87,10 +84,11 @@ public class UserLayerE2ETest {
     @Sql({"/e2e/users/insert_three_users.sql"})
     public void readAllUsers() {
         HttpHeaders headers = getTokenFromCredentialsAndReturnHttpHeaders("ExampleUser1", "ExamplePassword1");
-        ResponseEntity<User[]> result = testRestTemplate.exchange("http://localhost:" + port + "/users",HttpMethod.GET,new HttpEntity<>(headers), User[].class);
-        User user1 = new User(1, "ExampleUser1", "$2a$12$R8seoU4Vqpb7OMhz8APn.OmWh8PqKgu.WmZwBPjNuESEzU8OtywRq", UserRole.ADMIN);
-        User user2 = new User(2, "ExampleUser2", "$2a$12$HMPtzxWMBKdBMCpOBJkX1u6jhJaJhZtGD0ntMt9.OoS1LdpMCbwcW", UserRole.ADMIN);
-        User user3 = new User(3, "ExampleUser3", "$2a$12$xUC.trmEPGjMpFmWy31P3.a3WCogiEcnS/glAkKyXYuTyjMDBbqry", UserRole.ADMIN);
+        ResponseEntity<User[]> result = testRestTemplate.exchange("http://localhost:" + port + "/users", HttpMethod.GET, new HttpEntity<>(headers), User[].class);
+        assertThat(result.getStatusCode(), is(HttpStatus.OK));
+        User user1 = new User(4, "ExampleUser1", "$2a$12$R8seoU4Vqpb7OMhz8APn.OmWh8PqKgu.WmZwBPjNuESEzU8OtywRq", UserRole.ADMIN);
+        User user2 = new User(5, "ExampleUser2", "$2a$12$HMPtzxWMBKdBMCpOBJkX1u6jhJaJhZtGD0ntMt9.OoS1LdpMCbwcW", UserRole.ADMIN);
+        User user3 = new User(6, "ExampleUser3", "$2a$12$xUC.trmEPGjMpFmWy31P3.a3WCogiEcnS/glAkKyXYuTyjMDBbqry", UserRole.ADMIN);
 
         assertThat(Arrays.asList(result.getBody()), containsInAnyOrder(user1, user2, user3));
     }

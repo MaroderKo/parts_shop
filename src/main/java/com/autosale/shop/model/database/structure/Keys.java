@@ -8,8 +8,9 @@ import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
-
+import structure.tables.Logs;
 import structure.tables.Users;
+import structure.tables.records.LogsRecord;
 import structure.tables.records.UsersRecord;
 
 
@@ -17,12 +18,14 @@ import structure.tables.records.UsersRecord;
  * A class modelling foreign key relationships and constraints of tables in
  * public.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Keys {
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
+    public static final UniqueKey<LogsRecord> LOGS_PKEY = Internal.createUniqueKey(Logs.LOGS, DSL.name("logs_pkey"), new TableField[]{Logs.LOGS.TIME}, true);
+    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[]{Users.USERS.USER_NAME}, true);
+    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[]{Users.USERS.ID}, true);
 }

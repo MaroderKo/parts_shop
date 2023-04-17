@@ -31,4 +31,10 @@ public class LoginController {
     public boolean verifyToken(@RequestBody JwtTokensDTO tokens) {
         return authenticationService.isAuthenticated(tokens.getAccessToken());
     }
+
+    @PostMapping("/tokens/terminate/{id}")
+    @ResponseBody
+    public void terminateSession(@PathVariable("id") int id) {
+        authenticationService.terminateSession(id);
+    }
 }

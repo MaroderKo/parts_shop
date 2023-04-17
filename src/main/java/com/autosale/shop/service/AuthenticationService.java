@@ -12,5 +12,7 @@ public interface AuthenticationService {
 
     boolean isAuthenticated(String token);
 
-    Authentication getAuthentication(String token);
+    Authentication getAuthentication(User user);
+
+    void terminateSession(int id);
 }

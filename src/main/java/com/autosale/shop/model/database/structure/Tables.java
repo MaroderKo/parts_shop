@@ -4,14 +4,20 @@
 package structure;
 
 
+import structure.tables.Logs;
 import structure.tables.Users;
 
 
 /**
  * Convenience access to all tables in public.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Tables {
+
+    /**
+     * The table <code>public.logs</code>.
+     */
+    public static final Logs LOGS = Logs.LOGS;
 
     /**
      * The table <code>public.users</code>.

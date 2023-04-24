@@ -2,32 +2,34 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.model.UserSession;
+import com.autosale.shop.repository.UserSessionRepository;
+import com.autosale.shop.service.UserSessionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserSessionServiceImpl implements com.autosale.shop.service.UserSessionService {
+public class UserSessionServiceImpl implements UserSessionService {
+
+    private final UserSessionRepository repository;
 
     @Override
-    @Cacheable(value = "sessions", key = "#user.id")
     public UserSession createSession(User user) {
-        return new UserSession(UUID.randomUUID(), user);
+        UserSession session = new UserSession(UUID.randomUUID(), user);
+        repository.create(user.getId().toString(), session);
+        return session;
     }
 
     @Override
-    @CacheEvict(value = "sessions", key = "#id")
-    public void terminateSession(int id) {
+    public boolean terminateSession(int id) {
+        return repository.delete(Integer.toString(id));
     }
 
     @Override
-    @Cacheable(value = "sessions", key = "#user.id", unless = "#result == null")
     public UserSession getSession(User user) {
-        return null;
+        return repository.read(user.getId().toString());
     }
 
 }

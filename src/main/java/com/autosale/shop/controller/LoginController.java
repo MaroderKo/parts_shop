@@ -5,7 +5,10 @@ import com.autosale.shop.model.User;
 import com.autosale.shop.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -18,23 +21,12 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<JwtTokensDTO> login(@RequestBody User user) {
-        return ResponseEntity.ok(authenticationService.generateTokensByUserCredentials(user));
+        return ResponseEntity.ok(authenticationService.loginByUserCredentials(user));
     }
 
     @PostMapping("/tokens/refresh")
     public ResponseEntity<JwtTokensDTO> refreshTokens(@RequestBody Map<String, String> params) {
-        return ResponseEntity.ok(authenticationService.generateTokensByRefreshToken(params.get("refresh_token")));
+        return ResponseEntity.ok(authenticationService.loginByRefreshToken(params.get("refresh_token")));
     }
 
-    @PostMapping("/tokens/verify")
-    @ResponseBody
-    public boolean verifyToken(@RequestBody JwtTokensDTO tokens) {
-        return authenticationService.isAuthenticated(tokens.getAccessToken());
-    }
-
-    @PostMapping("/tokens/terminate/{id}")
-    @ResponseBody
-    public void terminateSession(@PathVariable("id") int id) {
-        authenticationService.terminateSession(id);
-    }
 }

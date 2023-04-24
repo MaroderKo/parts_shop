@@ -1,0 +1,1 @@
+alter table logs rename to session_history;

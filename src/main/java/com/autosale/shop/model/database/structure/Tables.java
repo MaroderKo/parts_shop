@@ -4,7 +4,7 @@
 package structure;
 
 
-import structure.tables.Logs;
+import structure.tables.SessionHistory;
 import structure.tables.Users;
 
 
@@ -15,9 +15,9 @@ import structure.tables.Users;
 public class Tables {
 
     /**
-     * The table <code>public.logs</code>.
+     * The table <code>public.session_history</code>.
      */
-    public static final Logs LOGS = Logs.LOGS;
+    public static final SessionHistory SESSION_HISTORY = SessionHistory.SESSION_HISTORY;
 
     /**
      * The table <code>public.users</code>.

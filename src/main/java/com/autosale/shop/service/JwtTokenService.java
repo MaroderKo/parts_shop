@@ -8,5 +8,5 @@ public interface JwtTokenService {
 
     JwtTokensDTO generateTokensFromRefreshToken(String refreshToken);
 
-    User getUserFromToken(String token);
+    User parseUser(String token);
 }

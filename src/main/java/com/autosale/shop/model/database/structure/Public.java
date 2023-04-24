@@ -7,7 +7,7 @@ package structure;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
-import structure.tables.Logs;
+import structure.tables.SessionHistory;
 import structure.tables.Users;
 
 import java.util.Arrays;
@@ -28,9 +28,9 @@ public class Public extends SchemaImpl {
     public static final Public PUBLIC = new Public();
 
     /**
-     * The table <code>public.logs</code>.
+     * The table <code>public.session_history</code>.
      */
-    public final Logs LOGS = Logs.LOGS;
+    public final SessionHistory SESSION_HISTORY = SessionHistory.SESSION_HISTORY;
 
     /**
      * The table <code>public.users</code>.
@@ -53,7 +53,7 @@ public class Public extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
-                Logs.LOGS,
+                SessionHistory.SESSION_HISTORY,
                 Users.USERS
         );
     }

@@ -6,7 +6,7 @@ import com.autosale.shop.model.UserSession;
 public interface UserSessionService {
     UserSession createSession(User user);
 
-    void terminateSession(int id);
+    boolean terminateSession(int id);
 
     UserSession getSession(User user);
 }

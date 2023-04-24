@@ -25,7 +25,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf()
                 .disable()
@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/users/**").authenticated()
                                 .requestMatchers("/users/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
+                                .requestMatchers("/sessions/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .addFilterAt(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .build();

@@ -63,7 +63,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     @Override
-    public User getUserFromToken(String token) {
+    public User parseUser(String token) {
         return getUserFromClaims(getClaimsFromToken(token));
     }
 

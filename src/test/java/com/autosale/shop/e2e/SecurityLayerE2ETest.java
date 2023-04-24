@@ -41,18 +41,6 @@ public class SecurityLayerE2ETest {
 
     @Test
     @Sql({"/e2e/users/insert_one_user.sql"})
-    public void verifyToken() {
-        User baseUser = new User(null, "user", "user", null);
-        ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});
-        Map<String, String> values = new HashMap<>();
-        values.put("access_token", tokens.getBody().get("access_token"));
-        ResponseEntity<Boolean> result = testRestTemplate.exchange("http://localhost:" + port + "/login/tokens/verify", HttpMethod.POST, new HttpEntity<>(values), new ParameterizedTypeReference<>() {
-        });
-        assertThat(result.getStatusCode(), is(HttpStatus.OK));
-    }
-
-    @Test
-    @Sql({"/e2e/users/insert_one_user.sql"})
     public void refreshTokens() {
         User baseUser = new User(null, "user", "user", null);
         ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});

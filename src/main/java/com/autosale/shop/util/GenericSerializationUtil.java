@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+
 public class GenericSerializationUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

@@ -7,6 +7,7 @@ import com.autosale.shop.service.UserSessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,7 +29,7 @@ public class UserSessionServiceImpl implements UserSessionService {
     }
 
     @Override
-    public UserSession getSession(User user) {
+    public Optional<UserSession> getSession(User user) {
         return repository.read(user.getId().toString());
     }
 

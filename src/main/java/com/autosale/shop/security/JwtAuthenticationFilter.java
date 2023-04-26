@@ -36,9 +36,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<String> tokenOptional = extractToken(request);
         if (tokenOptional.isPresent()) {
             String token = tokenOptional.get();
-            UserSession session = userSessionService.getSession(jwtTokenService.parseUser(token));
-            if (session != null) {
-                User sessionUser = session.getUser();
+            Optional<UserSession> session = userSessionService.getSession(jwtTokenService.parseUser(token));
+            if (session.isPresent()) {
+                User sessionUser = session.get().getUser();
                 Authentication authentication = new UsernamePasswordAuthenticationToken(sessionUser.getId(), "", List.of(new SimpleGrantedAuthority("ROLE_" + sessionUser.getRole().name())));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

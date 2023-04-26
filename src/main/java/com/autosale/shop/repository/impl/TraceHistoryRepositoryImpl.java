@@ -4,8 +4,8 @@ import com.autosale.shop.repository.TraceHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
-import structure.tables.SessionHistory;
-import structure.tables.records.SessionHistoryRecord;
+import structure.tables.TraceHistory;
+import structure.tables.records.TraceHistoryRecord;
 
 import java.time.LocalDateTime;
 
@@ -17,14 +17,14 @@ public class TraceHistoryRepositoryImpl implements TraceHistoryRepository {
 
     @Override
     public void create(String message) {
-        dsl.insertInto(SessionHistory.SESSION_HISTORY)
-                .set(new SessionHistoryRecord(LocalDateTime.now(), message))
+        dsl.insertInto(TraceHistory.TRACE_HISTORY)
+                .set(new TraceHistoryRecord(LocalDateTime.now(), message))
                 .execute();
 
     }
 
     @Override
     public void truncate() {
-        dsl.truncate(SessionHistory.SESSION_HISTORY).execute();
+        dsl.truncate(TraceHistory.TRACE_HISTORY).execute();
     }
 }

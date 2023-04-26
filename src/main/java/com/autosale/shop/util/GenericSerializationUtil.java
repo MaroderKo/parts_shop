@@ -1,14 +1,15 @@
 package com.autosale.shop.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 public class GenericSerializationUtil {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private GenericSerializationUtil() {
+    }
 
     @SneakyThrows
     public static <T> byte[] serialize(T t)

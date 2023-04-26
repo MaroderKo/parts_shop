@@ -40,12 +40,7 @@ public class UserSessionRepositoryImpl implements UserSessionRepository {
     public Optional<UserSession> read(String key) {
         try (RedisConnection connection = lettuceConnectionFactory.getConnection()) {
             byte[] bytes = connection.stringCommands().get(key.getBytes());
-            return Optional.of(deserialize(bytes, UserSession.class));
-        }
-        catch (IllegalArgumentException e)
-        {
-            log.error(e.getMessage());
-            return Optional.empty();
+            return Optional.ofNullable(bytes).map(b -> deserialize(b, UserSession.class));
         }
     }
 

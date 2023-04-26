@@ -4,20 +4,20 @@
 package structure;
 
 
-import structure.tables.SessionHistory;
+import structure.tables.TraceHistory;
 import structure.tables.Users;
 
 
 /**
  * Convenience access to all tables in public.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
 
     /**
-     * The table <code>public.session_history</code>.
+     * The table <code>public.trace_history</code>.
      */
-    public static final SessionHistory SESSION_HISTORY = SessionHistory.SESSION_HISTORY;
+    public static final TraceHistory TRACE_HISTORY = TraceHistory.TRACE_HISTORY;
 
     /**
      * The table <code>public.users</code>.

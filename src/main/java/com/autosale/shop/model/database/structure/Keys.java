@@ -8,9 +8,10 @@ import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
-import structure.tables.SessionHistory;
+
+import structure.tables.TraceHistory;
 import structure.tables.Users;
-import structure.tables.records.SessionHistoryRecord;
+import structure.tables.records.TraceHistoryRecord;
 import structure.tables.records.UsersRecord;
 
 
@@ -18,14 +19,14 @@ import structure.tables.records.UsersRecord;
  * A class modelling foreign key relationships and constraints of tables in
  * public.
  */
-@SuppressWarnings({"all", "unchecked", "rawtypes"})
+@SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Keys {
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<SessionHistoryRecord> LOGS_PKEY = Internal.createUniqueKey(SessionHistory.SESSION_HISTORY, DSL.name("logs_pkey"), new TableField[]{SessionHistory.SESSION_HISTORY.TIME}, true);
-    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[]{Users.USERS.USER_NAME}, true);
-    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[]{Users.USERS.ID}, true);
+    public static final UniqueKey<TraceHistoryRecord> LOGS_PKEY = Internal.createUniqueKey(TraceHistory.TRACE_HISTORY, DSL.name("logs_pkey"), new TableField[] { TraceHistory.TRACE_HISTORY.TIME }, true);
+    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[] { Users.USERS.USER_NAME }, true);
+    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
 }

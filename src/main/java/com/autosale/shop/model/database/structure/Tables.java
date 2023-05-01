@@ -4,6 +4,7 @@
 package structure;
 
 
+import structure.tables.TraceHistory;
 import structure.tables.Users;
 
 
@@ -12,6 +13,11 @@ import structure.tables.Users;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>public.trace_history</code>.
+     */
+    public static final TraceHistory TRACE_HISTORY = TraceHistory.TRACE_HISTORY;
 
     /**
      * The table <code>public.users</code>.

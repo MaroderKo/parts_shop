@@ -11,6 +11,7 @@ import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
+import structure.tables.TraceHistory;
 import structure.tables.Users;
 
 
@@ -26,6 +27,11 @@ public class Public extends SchemaImpl {
      * The reference instance of <code>public</code>
      */
     public static final Public PUBLIC = new Public();
+
+    /**
+     * The table <code>public.trace_history</code>.
+     */
+    public final TraceHistory TRACE_HISTORY = TraceHistory.TRACE_HISTORY;
 
     /**
      * The table <code>public.users</code>.
@@ -48,6 +54,7 @@ public class Public extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.asList(
+            TraceHistory.TRACE_HISTORY,
             Users.USERS
         );
     }

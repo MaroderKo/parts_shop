@@ -63,13 +63,25 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     }
 
     @Override
-    public Claims getClaimsFromToken(String token) {
+    public User parseUser(String token) {
+        return getUserFromClaims(getClaimsFromToken(token));
+    }
+
+    private Claims getClaimsFromToken(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(secretKey.getBytes())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private User getUserFromClaims(Claims claims) {
+        return new User(
+                Integer.parseInt(claims.get("id", String.class)),
+                claims.get("username", String.class),
+                null,
+                UserRole.valueOf(claims.get("role", String.class)));
     }
 
 }

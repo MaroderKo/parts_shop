@@ -1,0 +1,1 @@
+alter table session_history rename to trace_history;

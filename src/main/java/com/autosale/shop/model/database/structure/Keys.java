@@ -9,7 +9,9 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 
+import structure.tables.TraceHistory;
 import structure.tables.Users;
+import structure.tables.records.TraceHistoryRecord;
 import structure.tables.records.UsersRecord;
 
 
@@ -24,5 +26,7 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<TraceHistoryRecord> LOGS_PKEY = Internal.createUniqueKey(TraceHistory.TRACE_HISTORY, DSL.name("logs_pkey"), new TableField[] { TraceHistory.TRACE_HISTORY.TIME }, true);
+    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[] { Users.USERS.USER_NAME }, true);
     public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
 }

@@ -1,16 +1,13 @@
 package com.autosale.shop.repository;
 
 import com.autosale.shop.configuration.TestBeanFactory;
-import com.autosale.shop.model.Product;
-import com.autosale.shop.model.ProductStatus;
-import com.autosale.shop.model.User;
-import com.autosale.shop.model.UserRole;
+import com.autosale.shop.model.*;
 import com.autosale.shop.repository.impl.ProductRepositoryImpl;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +47,7 @@ public class ProductRepositoryTest {
         repository.save(product);
         repository.save(product1);
         repository.save(product2);
-        assertThat(repository.findAll(), containsInAnyOrder(product, product1, product2));
+        assertThat(repository.findAllWithConditions(new Pagination(), Collections.emptyList()), containsInAnyOrder(product, product1, product2));
     }
 
     @Test
@@ -63,8 +60,8 @@ public class ProductRepositoryTest {
         repository.save(product2);
         repository.save(product3);
         repository.save(product4);
-        assertThat(repository.findAllByUserId(1), containsInAnyOrder(product1,product2));
-        assertThat(repository.findAllByUserId(2), containsInAnyOrder(product3,product4));
+        assertThat(repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.SELLER_ID.eq(1))), containsInAnyOrder(product1, product2));
+        assertThat(repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.SELLER_ID.eq(2))), containsInAnyOrder(product3, product4));
     }
 
     @Test
@@ -77,7 +74,7 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void findByActive() {
+    void findByStatus() {
         Product product1 = generate(ProductStatus.ON_SALE, 1, null);
         Product product2 = generate(ProductStatus.SOLD, 1, null);
         Product product3 = generate(ProductStatus.BLOCKED, 1, null);
@@ -87,7 +84,7 @@ public class ProductRepositoryTest {
         repository.save(product3);
         repository.save(product4);
 
-        List<Product> activeProducts = repository.findAllActive();
+        List<Product> activeProducts = repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.STATUS.eq(ProductStatus.ON_SALE.toString())));
         assertThat(activeProducts.isEmpty(), is(false));
         assertThat(activeProducts, containsInAnyOrder(product1));
     }

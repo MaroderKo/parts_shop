@@ -1,33 +1,33 @@
 package com.autosale.shop.controller;
 
+import com.autosale.shop.model.Pagination;
 import com.autosale.shop.model.Product;
 import com.autosale.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/product")
+@RestController
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService service;
 
-    @GetMapping("/")
-    public ResponseEntity<List<Product>> getAll() {
-        return ResponseEntity.ok(service.findAll());
+    @GetMapping()
+    public ResponseEntity<List<Product>> getAll(@RequestBody Pagination pagination) {
+        return ResponseEntity.ok(service.findAll(pagination));
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<List<Product>> getAllActive() {
-        return ResponseEntity.ok(service.findAllActive());
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Product>> getAllByStatus(@RequestBody Pagination pagination, @PathVariable String status) {
+        return ResponseEntity.ok(service.findByStatus(pagination, status));
     }
 
     @GetMapping("/personal")
-    public ResponseEntity<List<Product>> getAllByUser() {
-        return ResponseEntity.ok(service.findAllFromCurrentUser());
+    public ResponseEntity<List<Product>> getAllByUser(@RequestBody Pagination pagination) {
+        return ResponseEntity.ok(service.findAllFromCurrentUser(pagination));
     }
 
     @GetMapping("/{id}")
@@ -36,29 +36,29 @@ public class ProductController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<Product>> getAllBySeller(@PathVariable int id) {
-        return ResponseEntity.ok(service.findAllFromUser(id));
+    public ResponseEntity<List<Product>> getAllByUserId(@PathVariable int id, @RequestBody Pagination pagination) {
+        return ResponseEntity.ok(service.findAllByUserId(id, pagination));
     }
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<Integer> create(@RequestBody Product product) {
         return ResponseEntity.ok(service.create(product));
     }
 
-    @PutMapping("/update")
+    @PutMapping()
     public ResponseEntity<Void> update(@RequestBody Product product) {
         service.edit(product);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Integer> delete(@PathVariable int id) {
         return ResponseEntity.ok(service.deleteById(id));
     }
 
     @PostMapping("/buy/{id}")
     public ResponseEntity<Void> buy(@PathVariable int id) {
-        service.makeSold(id);
+        service.buy(id);
         return ResponseEntity.ok().build();
     }
 }

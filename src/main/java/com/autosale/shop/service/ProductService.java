@@ -1,5 +1,6 @@
 package com.autosale.shop.service;
 
+import com.autosale.shop.model.Pagination;
 import com.autosale.shop.model.Product;
 import org.springframework.stereotype.Service;
 
@@ -7,15 +8,15 @@ import java.util.List;
 
 @Service
 public interface ProductService {
-    List<Product> findAll();
+    List<Product> findAll(Pagination pagination);
 
-    List<Product> findAllActive();
+    List<Product> findByStatus(Pagination pagination, String status);
 
     Product findById(int id);
 
-    List<Product> findAllFromCurrentUser();
+    List<Product> findAllFromCurrentUser(Pagination pagination);
 
-    List<Product> findAllFromUser(int id);
+    List<Product> findAllByUserId(int id, Pagination pagination);
 
     int create(Product product);
 
@@ -23,5 +24,5 @@ public interface ProductService {
 
     int deleteById(int id);
 
-    void makeSold(int productId);
+    void buy(int productId);
 }

@@ -1,9 +1,10 @@
 package com.autosale.shop.repository.impl;
 
+import com.autosale.shop.model.Pagination;
 import com.autosale.shop.model.Product;
-import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -47,22 +48,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAllActive() {
+    public List<Product> findAllWithConditions(Pagination pagination, List<Condition> conditions) {
         return dsl.selectFrom(PRODUCT)
-                .where(PRODUCT.STATUS.eq(ProductStatus.ON_SALE.toString()))
+                .where(conditions)
+                .offset((pagination.getCurrentPage() - 1) * pagination.getPageSize()) // -1 because we start pages from 1
+                .fetchSize(pagination.getPageSize())
                 .fetchInto(Product.class);
     }
 
-    @Override
-    public List<Product> findAll() {
-        return dsl.selectFrom(PRODUCT)
-                .fetchInto(Product.class);
-    }
-
-    @Override
-    public List<Product> findAllByUserId(int id) {
-        return dsl.selectFrom(PRODUCT)
-                .where(PRODUCT.SELLER_ID.eq(id))
-                .fetchInto(Product.class);
-    }
 }

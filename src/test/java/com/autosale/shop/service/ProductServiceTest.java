@@ -1,6 +1,7 @@
 package com.autosale.shop.service;
 
 
+import com.autosale.shop.model.Pagination;
 import com.autosale.shop.model.Product;
 import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
@@ -27,6 +28,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static structure.tables.Product.PRODUCT;
 
 public class ProductServiceTest {
 
@@ -46,8 +48,8 @@ public class ProductServiceTest {
         Product user3 = generate(null, 0, null);
 
         List<Product> users = List.of(user1, user2, user3);
-        when(repository.findAll()).thenReturn(users);
-        List<Product> returned = productService.findAll();
+        when(repository.findAllWithConditions(new Pagination(), Collections.emptyList())).thenReturn(users);
+        List<Product> returned = productService.findAll(new Pagination());
 
         assertThat(returned, containsInAnyOrder(user1, user2, user3));
     }
@@ -68,27 +70,30 @@ public class ProductServiceTest {
     }
 
     @Test
-    void findAllActive() {
-        when(repository.findAll()).thenReturn(Collections.emptyList());
-        productService.findAllActive();
-        verify(repository).findAllActive();
+    void findByStatus() {
+        Pagination pagination = new Pagination();
+        when(repository.findAllWithConditions(pagination, List.of(PRODUCT.STATUS.eq(ProductStatus.ON_SALE.toString())))).thenReturn(Collections.emptyList());
+        productService.findByStatus(pagination, "ON_SALE");
+        verify(repository).findAllWithConditions(pagination, List.of(PRODUCT.STATUS.eq(ProductStatus.ON_SALE.toString())));
     }
 
     @Test
     void findAllFromCurrentUser() {
         setUserAuthenticationContext();
-        when(repository.findAllByUserId(3)).thenReturn(Collections.emptyList());
-        productService.findAllFromCurrentUser();
-        verify(repository).findAllByUserId(3);
+        Pagination pagination = new Pagination();
+        when(repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(3)))).thenReturn(Collections.emptyList());
+        productService.findAllFromCurrentUser(pagination);
+        verify(repository).findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(3)));
 
     }
 
     @Test
     void findAllFromUser() {
         int userId = new Random().nextInt();
-        when(repository.findAllByUserId(userId)).thenReturn(Collections.emptyList());
-        productService.findAllFromUser(userId);
-        verify(repository).findAllByUserId(userId);
+        Pagination pagination = new Pagination();
+        when(repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(userId)))).thenReturn(Collections.emptyList());
+        productService.findAllByUserId(userId, pagination);
+        verify(repository).findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(userId)));
     }
 
     @Test
@@ -177,8 +182,8 @@ public class ProductServiceTest {
         SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(4, null, List.of(new SimpleGrantedAuthority("ROLE_USER")))));
         Product product = generate(ProductStatus.ON_SALE, 3, 80f);
         when(repository.findById(product.getId())).thenReturn(Optional.of(product));
-        productService.makeSold(product.getId());
-        verify(repository).update(new Product(product.getId(),product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), 4));
+        productService.buy(product.getId());
+        verify(repository).update(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), 4));
     }
 
     private void setUserAuthenticationContext() {

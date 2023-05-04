@@ -1,5 +1,6 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.model.Pagination;
 import com.autosale.shop.model.Product;
 import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
@@ -8,11 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import static structure.tables.Product.PRODUCT;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +25,18 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
 
     @Override
-    public List<Product> findAll() {
-        return repository.findAll();
+    public List<Product> findAll(Pagination pagination) {
+        return repository.findAllWithConditions(pagination, Collections.emptyList());
     }
 
     @Override
-    public List<Product> findAllActive() {
-        return repository.findAllActive();
+    public List<Product> findByStatus(Pagination pagination, String status) {
+        try {
+            ProductStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return repository.findAllWithConditions(pagination, List.of(PRODUCT.STATUS.eq(status)));
     }
 
     @Override
@@ -35,13 +45,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllFromCurrentUser() {
-        return repository.findAllByUserId((Integer) getContext().getAuthentication().getPrincipal());
+    public List<Product> findAllFromCurrentUser(Pagination pagination) {
+        Integer userId = (int) getContext().getAuthentication().getPrincipal();
+        return repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(userId)));
     }
 
     @Override
-    public List<Product> findAllFromUser(int id) {
-        return repository.findAllByUserId(id);
+    public List<Product> findAllByUserId(int id, Pagination pagination) {
+        return repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(id)));
     }
 
     @Override
@@ -73,9 +84,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void makeSold(int productId) {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void buy(int productId) {
         Product product = findById(productId);
-        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), (Integer) getContext().getAuthentication().getPrincipal());
-        repository.update(product);
+        if (product.getStatus().equals(ProductStatus.ON_SALE) && !product.getSellerId().equals(getContext().getAuthentication().getPrincipal())) {
+            product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), (Integer) getContext().getAuthentication().getPrincipal());
+            repository.update(product);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

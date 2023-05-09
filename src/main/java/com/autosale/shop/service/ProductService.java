@@ -1,22 +1,23 @@
 package com.autosale.shop.service;
 
-import com.autosale.shop.model.Pagination;
+import com.autosale.shop.model.PaginationRequest;
+import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
+import com.autosale.shop.model.ProductStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public interface ProductService {
-    List<Product> findAll(Pagination pagination);
 
-    List<Product> findByStatus(Pagination pagination, String status);
+    PaginationResponse<Product> findByStatus(PaginationRequest paginationRequest, ProductStatus status);
 
     Product findById(int id);
 
-    List<Product> findAllFromCurrentUser(Pagination pagination);
+    List<Product> findAllFromCurrentUser();
 
-    List<Product> findAllByUserId(int id, Pagination pagination);
+    List<Product> findAllByUserId(int id);
 
     int create(Product product);
 

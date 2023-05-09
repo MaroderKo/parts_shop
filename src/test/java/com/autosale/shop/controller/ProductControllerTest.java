@@ -1,7 +1,9 @@
 package com.autosale.shop.controller;
 
-import com.autosale.shop.model.Pagination;
+import com.autosale.shop.model.PaginationRequest;
+import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
+import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -33,10 +35,11 @@ public class ProductControllerTest {
     @Test
     void findAll() throws Exception {
         List<Product> products = List.of(generate(null, 1, null), generate(null, 1, null), generate(null, 1, null));
-        when(service.findAll(new Pagination())).thenReturn(products);
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products").content("{}").contentType(MediaType.APPLICATION_JSON))
+        PaginationRequest paginationRequest = new PaginationRequest();
+        when(service.findByStatus(paginationRequest, null)).thenReturn(new PaginationResponse<>(products, paginationRequest, 3));
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products").content(mapper.writeValueAsString(paginationRequest)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
-        assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(products)));
+        assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(new PaginationResponse<>(products, paginationRequest, 3))));
     }
 
     @Test
@@ -54,17 +57,18 @@ public class ProductControllerTest {
     @Test
     void getAllActive() throws Exception {
         List<Product> products = List.of(generate(null, 1, null), generate(null, 1, null), generate(null, 1, null));
-        when(service.findByStatus(new Pagination(), "ON_SALE")).thenReturn(products);
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products/status/ON_SALE").content("{}").contentType(MediaType.APPLICATION_JSON))
+        PaginationRequest paginationRequest = new PaginationRequest();
+        when(service.findByStatus(paginationRequest, ProductStatus.ON_SALE)).thenReturn(new PaginationResponse<>(products, paginationRequest, 3));
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products/statuses/ON_SALE").content(mapper.writeValueAsString(paginationRequest)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
-        assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(products)));
+        assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(new PaginationResponse<>(products, paginationRequest, 3))));
     }
 
     @Test
     void getAllByUser() throws Exception {
         List<Product> products = List.of(generate(null, 1, null), generate(null, 1, null), generate(null, 1, null));
-        when(service.findAllFromCurrentUser(new Pagination())).thenReturn(products);
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products/personal").content("{}").contentType(MediaType.APPLICATION_JSON))
+        when(service.findAllFromCurrentUser()).thenReturn(products);
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products/personal"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
         assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(products)));
     }
@@ -72,8 +76,8 @@ public class ProductControllerTest {
     @Test
     void getAllBySeller() throws Exception {
         List<Product> products = List.of(generate(null, 1, null), generate(null, 1, null), generate(null, 1, null));
-        when(service.findAllByUserId(1, new Pagination())).thenReturn(products);
-        MvcResult result = mock.perform(get("/products/user/1").content("{}").contentType(MediaType.APPLICATION_JSON))
+        when(service.findAllByUserId(1)).thenReturn(products);
+        MvcResult result = mock.perform(get("/products/user/1"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
         assertThat(HttpStatus.OK.value(), is(result.getResponse().getStatus()));

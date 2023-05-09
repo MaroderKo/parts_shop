@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +46,7 @@ public class ProductRepositoryTest {
         repository.save(product);
         repository.save(product1);
         repository.save(product2);
-        assertThat(repository.findAllWithConditions(new Pagination(), Collections.emptyList()), containsInAnyOrder(product, product1, product2));
+        assertThat(repository.findAllByStatus(new PaginationRequest(), null), containsInAnyOrder(product, product1, product2));
     }
 
     @Test
@@ -60,8 +59,8 @@ public class ProductRepositoryTest {
         repository.save(product2);
         repository.save(product3);
         repository.save(product4);
-        assertThat(repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.SELLER_ID.eq(1))), containsInAnyOrder(product1, product2));
-        assertThat(repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.SELLER_ID.eq(2))), containsInAnyOrder(product3, product4));
+        assertThat(repository.findAllByUserId(1), containsInAnyOrder(product1, product2));
+        assertThat(repository.findAllByUserId(2), containsInAnyOrder(product3, product4));
     }
 
     @Test
@@ -84,7 +83,7 @@ public class ProductRepositoryTest {
         repository.save(product3);
         repository.save(product4);
 
-        List<Product> activeProducts = repository.findAllWithConditions(new Pagination(), List.of(PRODUCT.STATUS.eq(ProductStatus.ON_SALE.toString())));
+        List<Product> activeProducts = repository.findAllByStatus(new PaginationRequest(), "ON_SALE");
         assertThat(activeProducts.isEmpty(), is(false));
         assertThat(activeProducts, containsInAnyOrder(product1));
     }

@@ -1,6 +1,7 @@
 package com.autosale.shop.service.impl;
 
-import com.autosale.shop.model.Pagination;
+import com.autosale.shop.model.PaginationRequest;
+import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
 import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
@@ -13,11 +14,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import static structure.tables.Product.PRODUCT;
 
 @Service
 @RequiredArgsConstructor
@@ -25,18 +24,16 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
 
     @Override
-    public List<Product> findAll(Pagination pagination) {
-        return repository.findAllWithConditions(pagination, Collections.emptyList());
-    }
-
-    @Override
-    public List<Product> findByStatus(Pagination pagination, String status) {
-        try {
-            ProductStatus.valueOf(status);
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    public PaginationResponse<Product> findByStatus(PaginationRequest paginationRequest, ProductStatus productStatus) {
+        String status = null;
+        if (productStatus != null) {
+            status = productStatus.toString();
         }
-        return repository.findAllWithConditions(pagination, List.of(PRODUCT.STATUS.eq(status)));
+
+        List<Product> products = repository.findAllByStatus(paginationRequest, status);
+        int totalAmount = repository.countAllByStatus(paginationRequest, status);
+
+        return new PaginationResponse<>(products, paginationRequest, totalAmount);
     }
 
     @Override
@@ -45,14 +42,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllFromCurrentUser(Pagination pagination) {
-        Integer userId = (int) getContext().getAuthentication().getPrincipal();
-        return repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(userId)));
+    public List<Product> findAllFromCurrentUser() {
+        int userId = (int) getContext().getAuthentication().getPrincipal();
+        return repository.findAllByUserId(userId);
     }
 
     @Override
-    public List<Product> findAllByUserId(int id, Pagination pagination) {
-        return repository.findAllWithConditions(pagination, List.of(PRODUCT.SELLER_ID.eq(id)));
+    public List<Product> findAllByUserId(int id) {
+        return repository.findAllByUserId(id);
     }
 
     @Override
@@ -61,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCost() >= 100) {
             status = ProductStatus.ON_MODERATION;
         }
-        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), status, product.getSellerId(), product.getBuyerId());
+        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), status, product.getSellerId() != null ? product.getSellerId() : (int) getContext().getAuthentication().getPrincipal(), product.getBuyerId());
         return repository.save(product).orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save product to database!"));
     }
 

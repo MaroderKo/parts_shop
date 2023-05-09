@@ -1,8 +1,7 @@
 package com.autosale.shop.repository;
 
-import com.autosale.shop.model.Pagination;
+import com.autosale.shop.model.PaginationRequest;
 import com.autosale.shop.model.Product;
-import org.jooq.Condition;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +16,9 @@ public interface ProductRepository {
 
     int deleteById(int id);
 
-    List<Product> findAllWithConditions(Pagination pagination, List<Condition> conditions);
+    List<Product> findAllByUserId(int userId);
+
+    List<Product> findAllByStatus(PaginationRequest pageRequest, String status);
+
+    int countAllByStatus(PaginationRequest pageRequest, String status);
 }

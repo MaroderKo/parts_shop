@@ -59,7 +59,7 @@ public class ProductControllerTest {
         List<Product> products = List.of(generate(null, 1, null), generate(null, 1, null), generate(null, 1, null));
         PaginationRequest paginationRequest = new PaginationRequest();
         when(service.findByStatus(paginationRequest, ProductStatus.ON_SALE)).thenReturn(new PaginationResponse<>(products, paginationRequest, 3));
-        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products/statuses/ON_SALE").content(mapper.writeValueAsString(paginationRequest)).contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mock.perform(MockMvcRequestBuilders.get("/products?status=ON_SALE").content(mapper.writeValueAsString(paginationRequest)).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON)).andReturn();
         assertThat(result.getResponse().getContentAsString(), is(mapper.writeValueAsString(new PaginationResponse<>(products, paginationRequest, 3))));
     }

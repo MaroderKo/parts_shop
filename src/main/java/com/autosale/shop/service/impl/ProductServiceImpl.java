@@ -25,10 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PaginationResponse<Product> findByStatus(PaginationRequest paginationRequest, ProductStatus productStatus) {
-        String status = null;
-        if (productStatus != null) {
-            status = productStatus.toString();
-        }
+        String status = productStatus == null ? null : productStatus.toString();
 
         List<Product> products = repository.findAllByStatus(paginationRequest, status);
         int totalAmount = repository.countAllByStatus(paginationRequest, status);
@@ -58,7 +55,8 @@ public class ProductServiceImpl implements ProductService {
         if (product.getCost() >= 100) {
             status = ProductStatus.ON_MODERATION;
         }
-        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), status, product.getSellerId() != null ? product.getSellerId() : (int) getContext().getAuthentication().getPrincipal(), product.getBuyerId());
+        int sellerId = product.getSellerId() != null ? product.getSellerId() : (int) getContext().getAuthentication().getPrincipal();
+        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), status, sellerId, product.getBuyerId());
         return repository.save(product).orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot save product to database!"));
     }
 

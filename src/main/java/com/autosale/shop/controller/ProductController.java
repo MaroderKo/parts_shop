@@ -18,12 +18,7 @@ public class ProductController {
     private final ProductService service;
 
     @GetMapping()
-    public ResponseEntity<PaginationResponse<Product>> getAll(@RequestBody PaginationRequest pagination) {
-        return ResponseEntity.ok(service.findByStatus(pagination, null));
-    }
-
-    @GetMapping("/statuses/{status}")
-    public ResponseEntity<PaginationResponse<Product>> getAllByStatus(@RequestBody PaginationRequest paginationRequest, @PathVariable(required = false) ProductStatus status) {
+    public ResponseEntity<PaginationResponse<Product>> getAllByStatus(@RequestBody PaginationRequest paginationRequest, @RequestParam(required = false) ProductStatus status) {
         return ResponseEntity.ok(service.findByStatus(paginationRequest, status));
     }
 

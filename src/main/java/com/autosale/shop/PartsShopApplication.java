@@ -13,8 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableRedisRepositories(enableKeyspaceEvents = RedisKeyValueAdapter.EnableKeyspaceEvents.ON_STARTUP)
 public class PartsShopApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PartsShopApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PartsShopApplication.class, args);
+    }
 
 }

@@ -4,6 +4,7 @@
 package structure;
 
 
+import structure.tables.Product;
 import structure.tables.TraceHistory;
 import structure.tables.Users;
 
@@ -11,8 +12,13 @@ import structure.tables.Users;
 /**
  * Convenience access to all tables in public.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class Tables {
+
+    /**
+     * The table <code>public.product</code>.
+     */
+    public static final Product PRODUCT = Product.PRODUCT;
 
     /**
      * The table <code>public.trace_history</code>.

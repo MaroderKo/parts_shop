@@ -49,7 +49,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        dsl.newRecord(USERS,user)
+        dsl.newRecord(USERS, user)
                 .update();
 
     }

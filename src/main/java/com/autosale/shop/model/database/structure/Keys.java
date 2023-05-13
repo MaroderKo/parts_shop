@@ -4,13 +4,15 @@
 package structure;
 
 
+import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
-
+import structure.tables.Product;
 import structure.tables.TraceHistory;
 import structure.tables.Users;
+import structure.tables.records.ProductRecord;
 import structure.tables.records.TraceHistoryRecord;
 import structure.tables.records.UsersRecord;
 
@@ -26,7 +28,15 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
-    public static final UniqueKey<TraceHistoryRecord> LOGS_PKEY = Internal.createUniqueKey(TraceHistory.TRACE_HISTORY, DSL.name("logs_pkey"), new TableField[] { TraceHistory.TRACE_HISTORY.TIME }, true);
-    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[] { Users.USERS.USER_NAME }, true);
-    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[] { Users.USERS.ID }, true);
+    public static final UniqueKey<ProductRecord> PRODUCT_PKEY = Internal.createUniqueKey(Product.PRODUCT, DSL.name("product_pkey"), new TableField[]{Product.PRODUCT.ID}, true);
+    public static final UniqueKey<TraceHistoryRecord> LOGS_PKEY = Internal.createUniqueKey(TraceHistory.TRACE_HISTORY, DSL.name("logs_pkey"), new TableField[]{TraceHistory.TRACE_HISTORY.TIME}, true);
+    public static final UniqueKey<UsersRecord> USERNAME_UNIQUE = Internal.createUniqueKey(Users.USERS, DSL.name("username_unique"), new TableField[]{Users.USERS.USER_NAME}, true);
+    public static final UniqueKey<UsersRecord> USERS_PKEY = Internal.createUniqueKey(Users.USERS, DSL.name("users_pkey"), new TableField[]{Users.USERS.ID}, true);
+
+    // -------------------------------------------------------------------------
+    // FOREIGN KEY definitions
+    // -------------------------------------------------------------------------
+
+    public static final ForeignKey<ProductRecord, UsersRecord> PRODUCT__PRODUCT_BUYER_ID_FKEY = Internal.createForeignKey(Product.PRODUCT, DSL.name("product_buyer_id_fkey"), new TableField[]{Product.PRODUCT.BUYER_ID}, Keys.USERS_PKEY, new TableField[]{Users.USERS.ID}, true);
+    public static final ForeignKey<ProductRecord, UsersRecord> PRODUCT__PRODUCT_SELLER_ID_FKEY = Internal.createForeignKey(Product.PRODUCT, DSL.name("product_seller_id_fkey"), new TableField[]{Product.PRODUCT.SELLER_ID}, Keys.USERS_PKEY, new TableField[]{Users.USERS.ID}, true);
 }

@@ -2,12 +2,9 @@ package com.autosale.shop.controller;
 
 import com.autosale.shop.model.User;
 import com.autosale.shop.service.UserService;
-import com.autosale.shop.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.jooq.exception.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

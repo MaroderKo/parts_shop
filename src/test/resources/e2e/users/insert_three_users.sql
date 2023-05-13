@@ -1,4 +1,4 @@
-truncate users;
+truncate users cascade;
 insert into users(id, user_name, password, role)
 VALUES (4, 'ExampleUser1', '$2a$12$R8seoU4Vqpb7OMhz8APn.OmWh8PqKgu.WmZwBPjNuESEzU8OtywRq', 'ADMIN');
 insert into users(id, user_name, password, role)

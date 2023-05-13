@@ -4,15 +4,14 @@
 package structure.tables.records;
 
 
-import java.time.LocalDateTime;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Row2;
 import org.jooq.impl.UpdatableRecordImpl;
-
 import structure.tables.TraceHistory;
+
+import java.time.LocalDateTime;
 
 
 /**

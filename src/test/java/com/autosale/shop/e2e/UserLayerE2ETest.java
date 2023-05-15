@@ -18,7 +18,7 @@ import static com.autosale.shop.generator.UserGenerator.generate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"JWT_TOKEN_SECRET=supersecretpassword123456789101101"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"JWT_TOKEN_SECRET=supersecretpassword123456789101101","AWS_ACCESS_KEY=","AWS_SECRET_KEY="})
 public class UserLayerE2ETest {
 
     @LocalServerPort

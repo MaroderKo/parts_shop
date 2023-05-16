@@ -21,7 +21,7 @@ public class AmazonS3ProductRepositoryImpl implements AmazonS3ProductRepository 
 
     private final AmazonS3 s3;
     private final CsvMapper csvMapper = new CsvMapper();
-    CsvSchema schema = csvMapper.schemaFor(Product.class);
+    private final CsvSchema schema = csvMapper.schemaFor(Product.class);
 
     @Override
     @SneakyThrows

@@ -1,4 +1,4 @@
-package com.autosale.shop.listeners;
+package com.autosale.shop.listener;
 
 import com.autosale.shop.service.TraceHistoryService;
 import lombok.RequiredArgsConstructor;

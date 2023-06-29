@@ -26,7 +26,7 @@ public class LoginController {
 
     @PostMapping("/tokens/refresh")
     public ResponseEntity<JwtTokensDTO> refreshTokens(@RequestBody Map<String, String> params) {
-        return ResponseEntity.ok(authenticationService.loginByRefreshToken(params.get("refresh_token")));
+        return ResponseEntity.ok(authenticationService.loginByRefreshToken(params.get("refreshToken")));
     }
 
 }

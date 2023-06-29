@@ -97,7 +97,7 @@ public class UserLayerE2ETest {
     {
         User baseUser = new User(null, login, password, null);
         ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});
-        String accessToken = tokens.getBody().get("access_token");
+        String accessToken = tokens.getBody().get("accessToken");
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
         return headers;

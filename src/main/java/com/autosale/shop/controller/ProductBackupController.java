@@ -1,6 +1,6 @@
 package com.autosale.shop.controller;
 
-import com.autosale.shop.service.ProductAwsService;
+import com.autosale.shop.service.ProductBackupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -8,21 +8,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDate;
+
 @Controller
 @RequestMapping("/backup")
 @RequiredArgsConstructor
 public class ProductBackupController {
-    private final ProductAwsService service;
+    private final ProductBackupService service;
     @PostMapping("/save")
-    public ResponseEntity<Void> save()
+    public ResponseEntity<String> save()
     {
         service.save();
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Backup saved with name "+ LocalDate.now());
     }
-    @PostMapping("/load/{backup_name}")
-    public ResponseEntity<Void> load(@PathVariable("backup_name") String backupName)
+    @PostMapping("/restore/{backupName}")
+    public ResponseEntity<Void> load(@PathVariable("backupName") LocalDate date)
     {
-        service.load(backupName);
+        service.restore(date);
         return ResponseEntity.ok().build();
     }
 }

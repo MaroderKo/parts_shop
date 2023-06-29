@@ -35,8 +35,8 @@ public class SecurityLayerE2ETest {
         ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});
         assertThat(tokens.getStatusCode().value(), is(200));
         assertThat(tokens.getBody(), notNullValue());
-        assertThat(tokens.getBody().get("access_token"), notNullValue());
-        assertThat(tokens.getBody().get("refresh_token"), notNullValue());
+        assertThat(tokens.getBody().get("accessToken"), notNullValue());
+        assertThat(tokens.getBody().get("refreshToken"), notNullValue());
     }
 
     @Test
@@ -45,12 +45,12 @@ public class SecurityLayerE2ETest {
         User baseUser = new User(null, "user", "user", null);
         ResponseEntity<Map<String, String>> tokens = testRestTemplate.exchange("http://localhost:" + port + "/login", HttpMethod.POST, new HttpEntity<>(baseUser), new ParameterizedTypeReference<>() {});
         Map<String, String> values = new HashMap<>();
-        values.put("refresh_token", tokens.getBody().get("refresh_token"));
+        values.put("refreshToken", tokens.getBody().get("refreshToken"));
         ResponseEntity<Map<String, String>> result = testRestTemplate.exchange("http://localhost:" + port + "/login/tokens/refresh", HttpMethod.POST, new HttpEntity<>(values), new ParameterizedTypeReference<>() {
         });
         assertThat(result.getStatusCode(), is(HttpStatus.OK));
         assertThat(result.getBody(), notNullValue());
-        assertThat(result.getBody().get("access_token"), notNullValue());
-        assertThat(result.getBody().get("refresh_token"), notNullValue());
+        assertThat(result.getBody().get("accessToken"), notNullValue());
+        assertThat(result.getBody().get("refreshToken"), notNullValue());
     }
 }

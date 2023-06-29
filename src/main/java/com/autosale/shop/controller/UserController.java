@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.exception.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,8 +32,6 @@ public class UserController {
     public ResponseEntity<User> findById(@PathVariable int id) {
 
         return ResponseEntity.ok(userServiceImpl.findById(id));
-
-
     }
 
     @DeleteMapping("/{id}")

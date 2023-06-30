@@ -10,6 +10,7 @@ import com.autosale.shop.service.CsvObjectMapperService;
 import com.autosale.shop.service.ProductBackupService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,18 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductBackupServiceImpl implements ProductBackupService {
+
+    //Polymorphism
+    //Якби існував клас що б по іншому імплементував-би один з наступних інтерфейсів то його можна було б замінити на той що є зараз без втрати функціоналу додатку
+
 
     private final CsvObjectMapperService objectMapperService;
     private final AmazonS3ProductClientRepository awsRepository;
     private final ProductRepository repository;
+
+
 
     @Override
     public void save() {
@@ -37,6 +45,9 @@ public class ProductBackupServiceImpl implements ProductBackupService {
         catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            log.info("Backup saved");
         }
     }
 

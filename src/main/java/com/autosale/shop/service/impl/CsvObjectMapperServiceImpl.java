@@ -20,6 +20,11 @@ import java.util.List;
 public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
 
     private final CsvMapper mapper;
+
+    //SOLID
+    // O - Open-closed principle
+    // Метод працює з абстрактним класом, при зміні типу об'єкту метод не потрыбно переписувати
+
     @Override
     public <T> String encode(List<T> objects, Class<T> type) {
         CsvSchema schema = mapper.schemaFor(type);

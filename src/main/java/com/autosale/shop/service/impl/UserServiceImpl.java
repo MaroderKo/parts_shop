@@ -56,6 +56,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        //Design Pattern
+        //Builder
+        //Процес конструювання об'єкту відділений ввинесений у певний білдер де його покроково може налаштовувати користувач, не прописуючи всі дані у конструктор
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUserName())
                 .password(user.getPassword())

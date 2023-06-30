@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    //SOLID
+    //D - Dependency inversion principle
+    // Об'єкт класу не залежить від конкретних реалізацій класів, а залежить від інтерфейсів, реалізації яких передаються у конструкторі
+
     private final JwtTokenService jwtTokenService;
     private final UserService userService;
     private final UserSessionService userSessionService;

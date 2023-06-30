@@ -16,6 +16,10 @@ import org.springframework.data.redis.core.RedisKeyExpiredEvent;
 public class RedisEventListener {
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    //Design Pattern
+    //Observer
+    //Цей клас під'єднаний до системи редісу і повідомляє нижчі по ієрархії класи про зміну ствну сесії (конкретно про кінець її дії)
+
     @Bean
     public RedisPubSubAdapter<String, String> redisKeyExpiredListener() {
         return new RedisPubSubAdapter<>() {

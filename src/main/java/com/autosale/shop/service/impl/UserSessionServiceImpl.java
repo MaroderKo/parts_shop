@@ -14,6 +14,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserSessionServiceImpl implements UserSessionService {
 
+    //SOLID
+    // L - Liskov Substitution principle
+    // Об'єкт класу створюється з об'єктом інтерфейсу а не класу, що дозволяє змінювати реалізації певних інтерфейсів
+
     private final UserSessionRepository repository;
 
     @Override

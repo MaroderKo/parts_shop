@@ -12,6 +12,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @Configuration
 public class SecurityConfiguration {
 
+    //Design pattern
+    //Singletone - патерн проектування при якому об'єкт може буи створений лише 1 раз за весь час роботи додатку
+    //В даному випадку його реалізує спрінг
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityConfiguration(JwtAuthenticationFilter jwtAuthenticationFilter) {

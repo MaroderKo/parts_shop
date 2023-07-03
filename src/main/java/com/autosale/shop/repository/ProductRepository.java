@@ -24,5 +24,5 @@ public interface ProductRepository {
 
     int countAllByStatus(PaginationRequest pageRequest, String status);
 
-    void saveIgnoreExistence(Product product);
+    void saveAllIgnoreExistence(List<Product> product);
 }

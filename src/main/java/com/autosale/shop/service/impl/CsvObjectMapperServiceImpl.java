@@ -1,6 +1,5 @@
 package com.autosale.shop.service.impl;
 
-import com.autosale.shop.model.Product;
 import com.autosale.shop.service.CsvObjectMapperService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -40,12 +39,12 @@ public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
     @Override
     public <T> List<T> decode(String data, Class<T> type) {
         CsvSchema schema = mapper.schemaFor(type);
-        try {
-            MappingIterator<T> it = mapper
-                    .readerFor(type)
-                    .with(schema)
-                    .with(CsvParser.Feature.WRAP_AS_ARRAY)
-                    .readValues(data);
+        try (MappingIterator<T> it = mapper
+                .readerFor(type)
+                .with(schema)
+                .with(CsvParser.Feature.WRAP_AS_ARRAY)
+                .readValues(data))
+        {
             return it.readAll();
         }
         catch (IOException e) {

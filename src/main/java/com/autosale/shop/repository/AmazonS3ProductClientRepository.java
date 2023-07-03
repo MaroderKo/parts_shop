@@ -1,11 +1,7 @@
 package com.autosale.shop.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.io.IOException;
-
 public interface AmazonS3ProductClientRepository {
-    void save(String data) throws JsonProcessingException;
+    void save(String data);
 
-    String load(String name) throws IOException;
+    String load(String name);
 }

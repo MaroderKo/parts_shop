@@ -1,5 +1,7 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.logger.LoggerFactory;
+import com.autosale.shop.logger.LoggerType;
 import com.autosale.shop.model.JwtTokensDTO;
 import com.autosale.shop.model.User;
 import com.autosale.shop.service.AuthenticationService;
@@ -17,6 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     //D - Dependency inversion principle
     // Об'єкт класу не залежить від конкретних реалізацій класів, а залежить від інтерфейсів, реалізації яких передаються у конструкторі
 
+    private final LoggerFactory loggerFactory;
     private final JwtTokenService jwtTokenService;
     private final UserService userService;
     private final UserSessionService userSessionService;
@@ -25,6 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtTokensDTO loginByUserCredentials(User user) {
         user = userService.getVerifiedUser(user.getUserName(), user.getPassword());
         userSessionService.createSession(user);
+        loggerFactory.getLogger(LoggerType.INFO).log("User "+user.getUserName()+" logged in!");
         return jwtTokenService.generateTokensPair(user);
     }
 

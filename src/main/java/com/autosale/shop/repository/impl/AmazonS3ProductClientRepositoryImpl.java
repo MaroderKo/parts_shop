@@ -5,9 +5,7 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.autosale.shop.repository.AmazonS3ProductClientRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,13 +25,8 @@ public class AmazonS3ProductClientRepositoryImpl implements AmazonS3ProductClien
         try(S3Object s3Object = s3.getObject("partsshop", name)) {
             return new String(s3Object.getObjectContent().readAllBytes());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch (AmazonS3Exception e)
-        {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Backup file with name "+name+" not found!");
+        catch (AmazonS3Exception | IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

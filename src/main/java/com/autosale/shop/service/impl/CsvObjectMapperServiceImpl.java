@@ -7,9 +7,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,8 +29,7 @@ public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
             return mapper.writer(schema).writeValueAsString(objects);
         }
         catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
         }
     }
 
@@ -48,8 +45,7 @@ public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
             return it.readAll();
         }
         catch (IOException e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.autosale.shop.config;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,9 +22,14 @@ public class BeanConfiguration {
     private final RedisProperties redisProperties;
 
     @Bean
-    public AmazonS3 amazonS3Client() {
+    public AWSCredentialsProvider awsCredentialsProvider() {
+        return new EnvironmentVariableCredentialsProvider();
+    }
+
+    @Bean
+    public AmazonS3 amazonS3Client(AWSCredentialsProvider credentialsProvider) {
         return AmazonS3ClientBuilder.standard()
-                .withCredentials(new DefaultAWSCredentialsProviderChain())
+                .withCredentials(credentialsProvider)
                 .build();
     }
 

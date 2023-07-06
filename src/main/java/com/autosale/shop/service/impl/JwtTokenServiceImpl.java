@@ -1,5 +1,6 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.exception.InvalidOperationException;
 import com.autosale.shop.model.JwtTokensDTO;
 import com.autosale.shop.model.User;
 import com.autosale.shop.model.UserRole;
@@ -10,9 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -53,7 +52,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public JwtTokensDTO generateTokensFromRefreshToken(String refreshToken) throws UnsupportedJwtException {
         Claims claims = getClaimsFromToken(refreshToken);
         if (!"refresh".equals(claims.get("type", String.class))) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Jwt token is not a refresh token");
+            throw new InvalidOperationException("Jwt token is not a refresh token");
         }
         return generateTokensPair(new User(
                 Integer.parseInt(claims.get("id", String.class)),

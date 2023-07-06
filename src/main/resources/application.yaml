@@ -6,13 +6,17 @@ spring:
     driver-class-name: org.postgresql.Driver
   jooq:
     sql-dialect: POSTGRES
-  redis:
-    host: localhost
-    port: 6379
+  data:
+    redis:
+      host: localhost
+      port: 6379
+cloud:
   aws:
-    region: eu-north-1
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: eu-north-1
 server:
   error:
     include-message: on-param

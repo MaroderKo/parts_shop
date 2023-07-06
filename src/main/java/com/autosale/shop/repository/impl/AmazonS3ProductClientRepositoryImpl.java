@@ -15,17 +15,17 @@ import java.time.LocalDate;
 public class AmazonS3ProductClientRepositoryImpl implements AmazonS3ProductClientRepository {
 
     private final AmazonS3 s3;
+
     @Override
     public void save(String data) {
-            s3.putObject("partsshop", LocalDate.now() + ".csv", data);
+        s3.putObject("partsshop", LocalDate.now() + ".csv", data);
     }
 
     @Override
     public String load(String name) {
-        try(S3Object s3Object = s3.getObject("partsshop", name)) {
+        try (S3Object s3Object = s3.getObject("partsshop", name)) {
             return new String(s3Object.getObjectContent().readAllBytes());
-        }
-        catch (AmazonS3Exception | IOException e) {
+        } catch (AmazonS3Exception | IOException e) {
             throw new RuntimeException(e);
         }
     }

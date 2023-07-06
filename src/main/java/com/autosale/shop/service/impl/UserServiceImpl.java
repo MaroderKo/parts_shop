@@ -1,5 +1,6 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.exception.AuthenticationException;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.service.UserService;
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
             return user.get();
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad credentials");
+        throw new AuthenticationException("Bad credentials");
 
     }
 

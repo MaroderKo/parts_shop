@@ -33,7 +33,7 @@ public class ProductBackupServiceImpl implements ProductBackupService {
 
     @Override
     public void save() {
-        List<Product> products = getListOfSoldProducts();
+        List<Product> products = getSoldProducts();
         awsRepository.save(encode(products));
     }
 
@@ -49,7 +49,7 @@ public class ProductBackupServiceImpl implements ProductBackupService {
     @Scheduled(cron = "0 0 23 ? * *")
     @Transactional
     public void saveAndClear() {
-        List<Product> products = getListOfSoldProducts();
+        List<Product> products = getSoldProducts();
         awsRepository.save(encode(products));
         repository.deleteByIdInArray(products.stream().map(Product::getId).toList());
     }
@@ -58,8 +58,7 @@ public class ProductBackupServiceImpl implements ProductBackupService {
         return objectMapperService.encode(products, Product.class);
     }
 
-    private List<Product> getListOfSoldProducts()
-    {
+    private List<Product> getSoldProducts() {
         return repository.findAllByStatus(new PaginationRequest(Integer.MAX_VALUE, 1), ProductStatus.SOLD.toString());
     }
 }

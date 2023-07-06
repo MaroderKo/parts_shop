@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/login/**").permitAll()
                                 .requestMatchers("/sessions/**").hasRole("ADMIN")
                                 .requestMatchers("/backup/**").hasRole("ADMIN")
+                                .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAt(jwtAuthenticationFilter, BasicAuthenticationFilter.class)
                 .build();

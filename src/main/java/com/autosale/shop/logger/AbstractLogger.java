@@ -1,6 +1,5 @@
 package com.autosale.shop.logger;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -14,8 +13,7 @@ public abstract class AbstractLogger {
     static {
         log.info("Logger initialised");
     }
-    @Getter
-    private LoggerType type;
+    public abstract LoggerType getType();
 
     public abstract void log(String message);
 }

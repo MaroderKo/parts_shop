@@ -1,6 +1,7 @@
 package com.autosale.shop.service;
 
 
+import com.autosale.shop.exception.PermissionDeniedException;
 import com.autosale.shop.model.PaginationRequest;
 import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
@@ -120,7 +121,7 @@ public class ProductServiceTest {
     void edit_blocked() {
         setUserAuthenticationContext();
         Product product = generate(ProductStatus.BLOCKED, 3, null);
-        assertThrows(ResponseStatusException.class, () -> productService.edit(product));
+        assertThrows(PermissionDeniedException.class, () -> productService.edit(product));
 
     }
 
@@ -136,7 +137,7 @@ public class ProductServiceTest {
     void edit_not_owned() {
         setUserAuthenticationContext();
         Product product = generate(null, 4, null);
-        assertThrows(ResponseStatusException.class, () -> productService.edit(product));
+        assertThrows(PermissionDeniedException.class, () -> productService.edit(product));
     }
 
     @Test
@@ -163,7 +164,7 @@ public class ProductServiceTest {
         Product product = generate(null, 4, null);
         when(repository.findById(product.getId())).thenReturn(Optional.of(product));
         when(repository.deleteById(product.getId())).thenReturn(1);
-        assertThrows(ResponseStatusException.class, () -> productService.deleteById(product.getId()));
+        assertThrows(PermissionDeniedException.class, () -> productService.deleteById(product.getId()));
     }
 
     @Test

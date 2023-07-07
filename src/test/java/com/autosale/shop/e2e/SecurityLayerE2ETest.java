@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"JWT_TOKEN_SECRET=supersecretpassword123456789101101","AWS_ACCESS_KEY=","AWS_SECRET_KEY="})
+@TestPropertySource(locations = "/application.yaml")
 public class SecurityLayerE2ETest {
     @LocalServerPort
     private int port;

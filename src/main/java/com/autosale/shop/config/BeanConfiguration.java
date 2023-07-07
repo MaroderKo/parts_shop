@@ -2,6 +2,7 @@ package com.autosale.shop.config;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ public class BeanConfiguration {
     public AmazonS3 amazonS3Client(AWSCredentialsProvider credentialsProvider) {
         return AmazonS3ClientBuilder.standard()
                 .withCredentials(credentialsProvider)
+                .withRegion(Regions.EU_NORTH_1)
                 .build();
     }
 

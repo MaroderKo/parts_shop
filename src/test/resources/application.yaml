@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/parts_shop
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: POSTGRES
+  data:
+    redis:
+      host: localhost
+      port: 6379
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: eu-north-1
+server:
+  error:
+    include-message: on-param
+jwt:
+  secret: ${JWT_TOKEN_SECRET}
+#  access token lifetime in minutes
+  access-token-lifetime: 10
+#  refresh token lifetime in hours
+  refresh-token-lifetime: 1

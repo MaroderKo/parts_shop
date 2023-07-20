@@ -1,7 +1,5 @@
 package com.autosale.shop.config;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,16 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class BeanConfiguration {
 
     private final RedisProperties redisProperties;
+    private final AwsConfiguration awsConfiguration;
 
     @Bean
-    public AWSCredentialsProvider awsCredentialsProvider() {
-        return new EnvironmentVariableCredentialsProvider();
-    }
-
-    @Bean
-    public AmazonS3 amazonS3Client(AWSCredentialsProvider credentialsProvider) {
+    public AmazonS3 amazonS3Client() {
         return AmazonS3ClientBuilder.standard()
-                .withCredentials(credentialsProvider)
+                .withCredentials(awsConfiguration.getCredentials())
+                .withCredentials(awsConfiguration.getCredentials())
+                .withRegion(awsConfiguration.getRegion())
                 .build();
     }
 

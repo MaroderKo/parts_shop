@@ -28,7 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtTokensDTO loginByUserCredentials(User user) {
         user = userService.getVerifiedUser(user.getUserName(), user.getPassword());
         userSessionService.createSession(user);
-        loggerFactory.getLogger(LoggerType.INFO).log("User "+user.getUserName()+" logged in!");
+        loggerFactory.getLogger(LoggerType.INFO).log("User " + user.getUserName() + " logged in!");
         return jwtTokenService.generateTokensPair(user);
     }
 

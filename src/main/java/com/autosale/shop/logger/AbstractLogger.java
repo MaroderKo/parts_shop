@@ -10,9 +10,7 @@ public abstract class AbstractLogger {
 
     //Abstract class
     //Був створений абстрактний клас у якому продекларовано метод, який має бути імплементований класами що його наслідують
-    static {
-        log.info("Logger initialised");
-    }
+
     public abstract LoggerType getType();
 
     public abstract void log(String message);

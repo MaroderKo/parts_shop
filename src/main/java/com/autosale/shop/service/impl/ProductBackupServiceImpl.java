@@ -30,7 +30,6 @@ public class ProductBackupServiceImpl implements ProductBackupService {
     private final ProductRepository repository;
 
 
-
     @Override
     public void save() {
         List<Product> products = getSoldProducts();
@@ -39,7 +38,7 @@ public class ProductBackupServiceImpl implements ProductBackupService {
 
     @Override
     public void restore(LocalDate date) {
-        String name = date+".csv";
+        String name = date + ".csv";
         List<Product> products;
         String productsData = awsRepository.load(name);
         products = objectMapperService.decode(productsData, Product.class);

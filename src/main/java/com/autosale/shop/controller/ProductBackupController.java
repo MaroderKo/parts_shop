@@ -15,15 +15,15 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ProductBackupController {
     private final ProductBackupService service;
+
     @PostMapping("/save")
-    public ResponseEntity<String> save()
-    {
+    public ResponseEntity<String> save() {
         service.save();
-        return ResponseEntity.ok("Backup saved with name "+ LocalDate.now());
+        return ResponseEntity.ok("Backup saved with name " + LocalDate.now());
     }
+
     @PostMapping("/restore/{backupName}")
-    public ResponseEntity<Void> load(@PathVariable("backupName") LocalDate date)
-    {
+    public ResponseEntity<Void> load(@PathVariable("backupName") LocalDate date) {
         service.restore(date);
         return ResponseEntity.ok().build();
     }

@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 public class LoggerFactory {
     private final Map<LoggerType, AbstractLogger> loggers;
 
-    public LoggerFactory(List<AbstractLogger> abstractLoggers)
-    {
+    public LoggerFactory(List<AbstractLogger> abstractLoggers) {
         loggers = abstractLoggers.stream().collect(Collectors.toMap(AbstractLogger::getType, Function.identity()));
     }
 

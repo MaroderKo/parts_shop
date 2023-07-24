@@ -27,8 +27,7 @@ public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
         CsvSchema schema = mapper.schemaFor(type);
         try {
             return mapper.writer(schema).writeValueAsString(objects);
-        }
-        catch (JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -40,11 +39,9 @@ public class CsvObjectMapperServiceImpl implements CsvObjectMapperService {
                 .readerFor(type)
                 .with(schema)
                 .with(CsvParser.Feature.WRAP_AS_ARRAY)
-                .readValues(data))
-        {
+                .readValues(data)) {
             return it.readAll();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

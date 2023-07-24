@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static structure.tables.Product.PRODUCT;
 
@@ -49,6 +50,13 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public int deleteByIdInArray(List<Integer> ids) {
+        return dsl.deleteFrom(PRODUCT)
+                .where(PRODUCT.ID.in(ids))
+                .execute();
+    }
+
+    @Override
     public List<Product> findAllByUserId(int userId) {
         return findAllWithConditions(List.of(PRODUCT.SELLER_ID.eq(userId)));
     }
@@ -69,6 +77,15 @@ public class ProductRepositoryImpl implements ProductRepository {
         } else {
             return countAllWithConditions(Collections.emptyList());
         }
+    }
+
+    @Override
+    public void saveAllIgnoreExistence(List<Product> products) {
+
+        dsl.batchStore(products.stream()
+                .map(p -> dsl.newRecord(PRODUCT, p))
+                .collect(Collectors.toUnmodifiableList()))
+                .execute();
     }
 
     private List<Product> findAllWithConditions(List<Condition> conditions) {

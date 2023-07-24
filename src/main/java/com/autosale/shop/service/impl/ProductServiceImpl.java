@@ -1,5 +1,7 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.exception.InvalidOperationException;
+import com.autosale.shop.exception.PermissionDeniedException;
 import com.autosale.shop.model.PaginationRequest;
 import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
@@ -65,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
         if (getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || (product.getSellerId().equals(getContext().getAuthentication().getPrincipal()) && !product.getStatus().equals(ProductStatus.BLOCKED))) {
             repository.update(product);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new PermissionDeniedException("You don't have permission to do that!");
         }
     }
 
@@ -74,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
         if (getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || findById(id).getSellerId().equals(getContext().getAuthentication().getPrincipal())) {
             return repository.deleteById(id);
         } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+            throw new PermissionDeniedException("You don't have permission to do that!");
         }
     }
 
@@ -86,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
             product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), (Integer) getContext().getAuthentication().getPrincipal());
             repository.update(product);
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            throw new InvalidOperationException("You can't buy this product");
         }
 
     }

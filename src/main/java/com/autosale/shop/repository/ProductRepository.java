@@ -16,9 +16,13 @@ public interface ProductRepository {
 
     int deleteById(int id);
 
+    int deleteByIdInArray(List<Integer> id);
+
     List<Product> findAllByUserId(int userId);
 
     List<Product> findAllByStatus(PaginationRequest pageRequest, String status);
 
     int countAllByStatus(PaginationRequest pageRequest, String status);
+
+    void saveAllIgnoreExistence(List<Product> product);
 }

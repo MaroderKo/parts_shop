@@ -1,5 +1,6 @@
 package com.autosale.shop.service.impl;
 
+import com.autosale.shop.exception.AuthenticationException;
 import com.autosale.shop.model.User;
 import com.autosale.shop.repository.UserRepository;
 import com.autosale.shop.service.UserService;
@@ -56,6 +57,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        //Design Pattern
+        //Builder
+        //Процес конструювання об'єкту відділений ввинесений у певний білдер де його покроково може налаштовувати користувач, не прописуючи всі дані у конструктор
+
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUserName())
                 .password(user.getPassword())
@@ -69,7 +75,7 @@ public class UserServiceImpl implements UserService {
         if (user.isPresent() && encoder.matches(password, user.get().getPassword())) {
             return user.get();
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad credentials");
+        throw new AuthenticationException("Bad credentials");
 
     }
 

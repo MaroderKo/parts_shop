@@ -31,8 +31,6 @@ public class UserController {
     public ResponseEntity<User> findById(@PathVariable int id) {
 
         return ResponseEntity.ok(userServiceImpl.findById(id));
-
-
     }
 
     @DeleteMapping("/{id}")

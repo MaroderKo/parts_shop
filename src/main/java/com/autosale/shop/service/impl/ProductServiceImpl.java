@@ -26,6 +26,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    // можливі проблеми - при зміні сторінки може дублюватись чи не бути показаний певний елемент (фантомні рядки). Можливі вирішення: зміна ізоляції на SERIALIZABLE, але враховуючи що пошук товарів це один з основних функціоналів у багатокористувацькому магазині це робить дане рішення неефективним, також можливо змінити тип пагінації на keyset-based
     public PaginationResponse<Product> findByStatus(PaginationRequest paginationRequest, ProductStatus productStatus) {
         String status = productStatus == null ? null : productStatus.toString();
 
@@ -63,6 +65,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    // в межах транзакції зчитується і змінюється багато важливих даних, зміна яких ззовні - неприпустима
     public void edit(Product product) {
         if (getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) || (product.getSellerId().equals(getContext().getAuthentication().getPrincipal()) && !product.getStatus().equals(ProductStatus.BLOCKED))) {
             repository.update(product);
@@ -82,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
+    // ситуація схожа до апдейту, проте в межах транзакції додатково виконується зчитуваня даних та перевірка їх за певними обмеженями, що дає змогу понизити рівень ізоляції до REPEATABLE_READ
     public void buy(int productId) {
         Product product = findById(productId);
         if (product.getStatus().equals(ProductStatus.ON_SALE) && !product.getSellerId().equals(getContext().getAuthentication().getPrincipal())) {

@@ -6,7 +6,10 @@ import com.autosale.shop.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.exception.DataAccessException;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +24,8 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final DSLContext dsl;
 
     @Override
+    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    // читання даних не відбувається а номер айді заповює сама бд, тому можна поставити найнижчий рівень ізоляції
     public Optional<Integer> save(Product product) {
         return dsl.insertInto(PRODUCT)
                 .set(dsl.newRecord(PRODUCT, product))
@@ -38,8 +43,15 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public void update(Product product) {
-        dsl.newRecord(PRODUCT, product)
-                .update();
+        int deleted = dsl.deleteFrom(PRODUCT)
+                .where(PRODUCT.ID.eq(product.getId()))
+                .execute();
+        if (deleted == 0) {
+            throw new DataAccessException("No record with id " + product.getId() + " found for deletion.");
+        }
+        dsl.insertInto(PRODUCT)
+                .set(dsl.newRecord(PRODUCT, product))
+                .execute();
     }
 
     @Override
@@ -62,6 +74,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED) // йде зчитування актуальних даних на момент запиту
     public List<Product> findAllByStatus(PaginationRequest pageRequest, String status) {
         if (status != null) {
             return findAllWithConditionsPageable(pageRequest, List.of(PRODUCT.STATUS.eq(status)));

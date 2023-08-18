@@ -10,6 +10,18 @@ spring:
     redis:
       host: localhost
       port: 6379
+  kafka:
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      group-id: buyGroup
+    properties:
+      spring.json.trusted.packages: com.autosale.shop.model
+    template:
+      default-topic: shopping
+    bootstrap-servers: localhost:9092
+
 cloud:
   aws:
     region:

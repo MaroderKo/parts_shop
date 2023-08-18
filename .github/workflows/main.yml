@@ -42,5 +42,32 @@ jobs:
         run: docker rm -f -v redis
         shell: bash
 
+  deploy:
+    runs-on: self-hosted
+    needs:
+      - test
+      - cleaner
+    if: needs.test.result == 'success'
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/temp
+          echo -e "${{ secrets.EC2_KEY }}" > ~/temp/id_rsa
+          chmod 600 ~/temp/id_rsa
 
+      - name: Copy files to EC2
+        run: |
+          rsync -avz -e "ssh -i ~/temp/id_rsa" ./ ubuntu@3.66.232.171:~/shop
+
+      - name: closing old screen
+        run: |
+          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "
+          screen -ls | grep shop &&
+          screen -S shop -X quit || true
+          "
+
+      - name: starting new screen
+        run: |
+          sleep 10 &&
+          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "cd ~/shop && screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod -PjwtTokenSecret=${{ secrets.JWT_TOKEN_SECRET }} -PawsAccessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} -PawsSecretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }}'"
 

@@ -55,19 +55,16 @@ jobs:
           echo -e "${{ secrets.EC2_KEY }}" > ~/temp/id_rsa
           chmod 600 ~/temp/id_rsa
 
+      - name: Stopping old version
+        run: |
+          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "~/shop/gradlew --stop && sleep 5 && sudo docker-compose -f ~/shop/docker-compose-prod.yml down && sleep 7 && rm -r -f ~/shop"
+
       - name: Copy files to EC2
         run: |
           rsync -avz -e "ssh -i ~/temp/id_rsa" ./ ubuntu@3.66.232.171:~/shop
 
-      - name: closing old screen
-        run: |
-          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "
-          screen -ls | grep shop &&
-          screen -S shop -X quit || true
-          "
-
       - name: starting new screen
         run: |
           sleep 10 &&
-          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "cd ~/shop && screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod -PjwtTokenSecret=${{ secrets.JWT_TOKEN_SECRET }} -PawsAccessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} -PawsSecretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }}'"
+          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "cd ~/shop && sudo docker-compose -f ~/shop/docker-compose-prod.yml up -d && AWS_ACCESS_KEY_ID=AKIAR3CFVHPLTSGKALW5 AWS_SECRET_ACCESS_KEY=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 JWT_TOKEN_SECRET="supersecretpassword123456789101101" nohup ./gradlew bootRun --args='--spring.profiles.active=prod' &"
 

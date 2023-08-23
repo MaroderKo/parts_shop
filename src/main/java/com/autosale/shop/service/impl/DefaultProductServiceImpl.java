@@ -10,6 +10,7 @@ import com.autosale.shop.repository.ProductRepository;
 import com.autosale.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ import java.util.List;
 
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-@Service("defaultProductService")
+@Service
+@Profile("!Kafka")
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultProductServiceImpl implements ProductService {

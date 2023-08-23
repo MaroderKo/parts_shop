@@ -1,6 +1,5 @@
 package com.autosale.shop.service.impl;
 
-import com.autosale.shop.config.condition.KafkaCondition;
 import com.autosale.shop.exception.InvalidOperationException;
 import com.autosale.shop.exception.PermissionDeniedException;
 import com.autosale.shop.model.*;
@@ -8,8 +7,7 @@ import com.autosale.shop.repository.ProductRepository;
 import com.autosale.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -23,9 +21,8 @@ import java.util.List;
 
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-@Conditional(KafkaCondition.class)
-@Service("kafkaProductService")
-@Primary
+@Service
+@Profile("Kafka")
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaProductServiceImpl implements ProductService {

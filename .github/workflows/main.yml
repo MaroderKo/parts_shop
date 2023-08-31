@@ -49,25 +49,15 @@ jobs:
       - cleaner
     if: needs.test.result == 'success'
     steps:
-      - name: Set up SSH
+      - name: Stopping old version
         run: |
-          mkdir -p ~/temp
-          echo -e "${{ secrets.EC2_KEY }}" > ~/temp/id_rsa
-          chmod 600 ~/temp/id_rsa
+          [ -d "$HOME/shop/" ] && cd ~/shop && sh clear.sh || 2>/dev/null
 
-      - name: Copy files to EC2
+      - name: Copy files to deploy folder
         run: |
-          rsync -avz -e "ssh -i ~/temp/id_rsa" ./ ubuntu@3.66.232.171:~/shop
-
-      - name: closing old screen
-        run: |
-          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "
-          screen -ls | grep shop &&
-          screen -S shop -X quit || true
-          "
+          cp -r ./ ~/shop 
 
       - name: starting new screen
         run: |
-          sleep 10 &&
-          ssh -i ~/temp/id_rsa ubuntu@3.66.232.171 "cd ~/shop && screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod -PjwtTokenSecret=${{ secrets.JWT_TOKEN_SECRET }} -PawsAccessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} -PawsSecretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }}'"
+          RUNNER_TRACKING_ID="" && cd ~/shop && sudo docker-compose -f ~/shop/docker-compose-prod.yml up -d && AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod' &
 

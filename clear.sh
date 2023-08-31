@@ -1,0 +1,1 @@
+~/shop/gradlew --stop && sleep 5 && sudo docker-compose -f ~/shop/docker-compose-prod.yml down && sleep 7 && rm -r -f ~/shop

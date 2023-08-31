@@ -2,15 +2,16 @@ package com.autosale.shop.service.impl;
 
 import com.autosale.shop.exception.InvalidOperationException;
 import com.autosale.shop.exception.PermissionDeniedException;
-import com.autosale.shop.model.*;
+import com.autosale.shop.model.PaginationRequest;
+import com.autosale.shop.model.PaginationResponse;
+import com.autosale.shop.model.Product;
+import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
 import com.autosale.shop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.kafka.annotation.KafkaHandler;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -22,11 +23,11 @@ import java.util.List;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
+@Profile("!Kafka")
 @RequiredArgsConstructor
 @Slf4j
-public class ProductServiceImpl implements ProductService {
+public class DefaultProductServiceImpl implements ProductService {
     private final ProductRepository repository;
-    private final KafkaTemplate<Object, Object> template;
 
     @Override
     public PaginationResponse<Product> findByStatus(PaginationRequest paginationRequest, ProductStatus productStatus) {
@@ -88,17 +89,10 @@ public class ProductServiceImpl implements ProductService {
     public void buy(int productId) {
         Product product = findById(productId);
         if (product.getStatus().equals(ProductStatus.ON_SALE) && !product.getSellerId().equals(getContext().getAuthentication().getPrincipal())) {
-            template.send("shopping", new SaleInfoDTO((Integer) getContext().getAuthentication().getPrincipal(), productId));
+            product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), (int) getContext().getAuthentication().getPrincipal());
+            repository.update(product);
         } else {
             throw new InvalidOperationException("You can't buy this product");
         }
-    }
-
-    @KafkaListener(id = "buyGroup", topics = "shopping")
-    public void buyListener(SaleInfoDTO saleInfo) {
-        System.out.println("SaleInfo received");
-        Product product = findById(saleInfo.getProductId());
-        product = new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), saleInfo.getBuyerId());
-        repository.update(product);
     }
 }

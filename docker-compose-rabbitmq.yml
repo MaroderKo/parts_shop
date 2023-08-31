@@ -1,0 +1,11 @@
+version: '2.1'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3.8-management"
+    ports:
+      - "5672:5672" # зовнішній порт
+      - "15672:15672" # порт для веб-інтерфейсу управління
+    environment:
+      RABBITMQ_DEFAULT_USER: "Admin"
+      RABBITMQ_DEFAULT_PASS: "Admin"

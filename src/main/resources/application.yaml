@@ -20,7 +20,7 @@ server:
   error:
     include-message: on-param
 jwt:
-  secret: ${JWT_TOKEN_SECRET}
+  secret: ${JWT_TOKEN_SECRET:placeholderpassword000111}
 #  access token lifetime in minutes
   access-token-lifetime: 10
 #  refresh token lifetime in hours

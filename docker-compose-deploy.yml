@@ -1,0 +1,35 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:7.0.10-alpine'
+    container_name: prod-redis
+    expose:
+      - '6379'
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: prod-db
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_DB=parts_shop
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  parts_shop:
+    container_name: parts_shop
+    build:
+      context: .
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/parts_shop
+      - JWT_TOKEN_SECRET="supersecretpassword123456789101101"
+      - AWS_ACCESS_KEY_ID=AKIAR3CFVHPLTSGKALW5
+      - AWS_SECRET_ACCESS_KEY=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
+    ports:
+      - '8080:8080'

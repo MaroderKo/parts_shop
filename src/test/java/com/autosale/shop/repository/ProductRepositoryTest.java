@@ -100,7 +100,7 @@ public class ProductRepositoryTest {
     void update() {
         Product product = generate(ProductStatus.ON_SALE, 1, null);
         repository.save(product);
-        Product newProduct = new Product(product.getId(), "1234", null, 1f, product.getStatus(), product.getSellerId(), product.getBuyerId());
+        Product newProduct = new Product(product.getId(), "1234", "", 1f, product.getStatus(), product.getSellerId(), product.getBuyerId());
         repository.update(newProduct);
         assertThat(repository.findById(newProduct.getId()).get(), is(newProduct));
     }

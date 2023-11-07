@@ -57,7 +57,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return generateTokensPair(new User(
                 Integer.parseInt(claims.get("id", String.class)),
                 claims.get("username", String.class),
-                null,
+                "",
                 UserRole.valueOf(claims.get("role", String.class))));
     }
 
@@ -79,7 +79,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         return new User(
                 Integer.parseInt(claims.get("id", String.class)),
                 claims.get("username", String.class),
-                null,
+                "",
                 UserRole.valueOf(claims.get("role", String.class)));
     }
 

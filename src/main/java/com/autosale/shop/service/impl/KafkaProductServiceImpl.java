@@ -22,7 +22,7 @@ import java.util.List;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
-@Profile("Kafka")
+@Profile({"Kafka & !RabbitMQ"})
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaProductServiceImpl implements ProductService {

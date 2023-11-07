@@ -1,0 +1,6 @@
+spring:
+  data:
+    redis:
+      host: redis
+  datasource:
+    url: jdbc:postgresql://db:5432/parts_shop

@@ -30,34 +30,25 @@ jobs:
     if: ${{ always() }}
     steps:
       - name: db stopper
-        run: docker stop db
+        run: docker-compose down
         shell: bash
-      - name: db cleaner
-        run: docker rm -f -v db
-        shell: bash
-      - name: redis stopper
-        run: docker stop redis
-        shell: bash
-      - name: redis cleaner
-        run: docker rm -f -v redis
-        shell: bash
-
-  deploy:
-    runs-on: self-hosted
-    needs:
-      - test
-      - cleaner
-    if: needs.test.result == 'success'
-    steps:
-      - name: Stopping old version
-        run: |
-          [ -d "$HOME/shop/" ] && cd ~/shop && sh clear.sh || 2>/dev/null
-
-      - name: Copy files to deploy folder
-        run: |
-          cp -r ./ ~/shop 
-
-      - name: starting new screen
-        run: |
-          RUNNER_TRACKING_ID="" && cd ~/shop && sudo docker-compose -f ~/shop/docker-compose-prod.yml up -d && AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod' &
-
+#
+#  deploy:
+#    runs-on: self-hosted
+#    needs:
+#      - test
+#      - cleaner
+#    if: needs.test.result == 'success'
+#    steps:
+#      - name: Stopping old version
+#        run: |
+#          [ -d "$HOME/shop/" ] && cd ~/shop && sh clear.sh || 2>/dev/null
+#
+#      - name: Copy files to deploy folder
+#        run: |
+#          cp -r ./ ~/shop
+#
+#      - name: starting new screen
+#        run: |
+#          RUNNER_TRACKING_ID="" && cd ~/shop && sudo docker-compose -f ~/shop/docker-compose-prod.yml up -d && AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} screen -dmS shop ./gradlew bootRun --args='--spring.profiles.active=prod' &
+#

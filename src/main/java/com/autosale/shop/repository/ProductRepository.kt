@@ -2,11 +2,10 @@ package com.autosale.shop.repository
 
 import com.autosale.shop.model.PaginationRequest
 import com.autosale.shop.model.Product
-import java.util.*
 
 interface ProductRepository {
-    fun save(product: Product): Optional<Int>
-    fun findById(id: Int): Optional<Product>
+    fun save(product: Product): Int
+    fun findById(id: Int): Product?
     fun update(product: Product)
     fun deleteById(id: Int): Int
     fun deleteByIdInArray(ids: List<Int>): Int

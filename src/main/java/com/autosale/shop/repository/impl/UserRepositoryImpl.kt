@@ -2,13 +2,12 @@ package com.autosale.shop.repository.impl
 
 import com.autosale.shop.model.User
 import com.autosale.shop.repository.UserRepository
-import lombok.RequiredArgsConstructor
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import structure.tables.Users
 import java.util.*
 
-@RequiredArgsConstructor
+
 @Repository
 class UserRepositoryImpl(private val dsl: DSLContext) : UserRepository {
     override fun findAll(): List<User> {

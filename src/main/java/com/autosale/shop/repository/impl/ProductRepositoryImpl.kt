@@ -6,23 +6,21 @@ import com.autosale.shop.repository.ProductRepository
 import org.jooq.Condition
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
-import java.util.Optional
-import java.util.stream.Collectors
 
 @Repository
 class ProductRepositoryImpl(private val dsl: DSLContext) : ProductRepository {
     
-    override fun save(product: Product): Optional<Int> {
+    override fun save(product: Product): Int {
         return dsl.insertInto(structure.tables.Product.PRODUCT)
             .set(dsl.newRecord(structure.tables.Product.PRODUCT, product))
             .returningResult(structure.tables.Product.PRODUCT.ID)
-            .fetchOptionalInto(Int::class.java)
+            .fetchOneInto(Int::class.java)!!
     }
 
-    override fun findById(id: Int): Optional<Product> {
+    override fun findById(id: Int): Product? {
         return dsl.selectFrom(structure.tables.Product.PRODUCT)
             .where(structure.tables.Product.PRODUCT.ID.eq(id))
-            .fetchOptionalInto(Product::class.java)
+            .fetchOneInto(Product::class.java)
     }
 
     override fun update(product: Product) {
@@ -50,7 +48,7 @@ class ProductRepositoryImpl(private val dsl: DSLContext) : ProductRepository {
         return if (status != null) {
             findAllWithConditionsPageable(
                 pageRequest,
-                java.util.List.of(structure.tables.Product.PRODUCT.STATUS.eq(status))
+                listOf(structure.tables.Product.PRODUCT.STATUS.eq(status))
             )
         } else {
             findAllWithConditionsPageable(pageRequest, emptyList())
@@ -59,17 +57,14 @@ class ProductRepositoryImpl(private val dsl: DSLContext) : ProductRepository {
 
     override fun countAllByStatus(pageRequest: PaginationRequest, status: String?): Int {
         return if (status != null) {
-            countAllWithConditions(java.util.List.of(structure.tables.Product.PRODUCT.STATUS.eq(status)))
+            countAllWithConditions(listOf(structure.tables.Product.PRODUCT.STATUS.eq(status)))
         } else {
             countAllWithConditions(emptyList())
         }
     }
 
     override fun saveAllIgnoreExistence(products: List<Product>) {
-        dsl.batchStore(
-            products.stream()
-                .map { p: Product -> dsl.newRecord(structure.tables.Product.PRODUCT, p) }
-                .collect(Collectors.toUnmodifiableList()))
+        dsl.batchStore(products.map { p: Product -> dsl.newRecord(structure.tables.Product.PRODUCT, p) })
             .execute()
     }
 

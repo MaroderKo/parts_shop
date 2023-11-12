@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class AwsConfiguration(
-    val credentials: AWSCredentialsProvider = EnvironmentVariableCredentialsProvider(),
-
+data class AwsConfiguration(
     @Value("\${cloud.aws.region.static}")
-    val region: String? = null
+    val region: String
 )
+{
+        val credentials: AWSCredentialsProvider = EnvironmentVariableCredentialsProvider()
+}

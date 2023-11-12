@@ -4,19 +4,15 @@ import com.autosale.shop.model.UserSession
 import com.autosale.shop.repository.UserSessionRepository
 import com.autosale.shop.util.GenericSerializationUtil
 import lombok.SneakyThrows
-import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
-@Slf4j
 class UserSessionRepositoryImpl(
     private val lettuceConnectionFactory: LettuceConnectionFactory,
     @Value("\${jwt.access-token-lifetime}") private val sessionTimeToLive: Int
-) : UserSessionRepository
-{
+) : UserSessionRepository {
     @SneakyThrows
     override fun create(key: String, session: UserSession) {
         lettuceConnectionFactory.getConnection().use { connection ->
@@ -26,11 +22,10 @@ class UserSessionRepositoryImpl(
     }
 
     @SneakyThrows
-    override fun read(key: String): Optional<UserSession> {
+    override fun read(key: String): UserSession {
         lettuceConnectionFactory.getConnection().use { connection ->
             val bytes = connection.stringCommands()[key.toByteArray()]
-            return Optional.ofNullable(bytes)
-                .map { b: ByteArray? -> GenericSerializationUtil.deserialize(b, UserSession::class.java) }
+            return bytes?.let { GenericSerializationUtil.deserialize(it, UserSession::class.java) }!!
         }
     }
 

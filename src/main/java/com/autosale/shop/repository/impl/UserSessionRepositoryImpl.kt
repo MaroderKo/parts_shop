@@ -25,7 +25,7 @@ class UserSessionRepositoryImpl(
     override fun read(key: String): UserSession {
         lettuceConnectionFactory.getConnection().use { connection ->
             val bytes = connection.stringCommands()[key.toByteArray()]
-            return bytes?.let { GenericSerializationUtil.deserialize(it, UserSession::class.java) }!!
+            return bytes?.let { GenericSerializationUtil.deserialize(it) }!!
         }
     }
 

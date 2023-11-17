@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import kotlinx.coroutines.*
 
 @Service
 class ProductBackupServiceImpl(
@@ -25,11 +26,17 @@ class ProductBackupServiceImpl(
     }
 
     override fun restore(date: LocalDate) {
-        val name = "$date.csv"
-        val products: List<Product>
-        val productsData = awsRepository.load(name)
-        products = objectMapperService.decode(productsData, Product::class.java)
-        repository.saveAllIgnoreExistence(products)
+        runBlocking {
+            val name = "$date.csv"
+            val getData = async {
+                val productsData = awsRepository.load(name)
+                objectMapperService.decode(productsData, Product::class.java)
+            }
+
+            val products: List<Product> = getData.await()
+
+            repository.saveAllIgnoreExistence(products)
+        }
     }
 
     @Scheduled(cron = "0 0 23 ? * *")
@@ -44,5 +51,6 @@ class ProductBackupServiceImpl(
         return objectMapperService.encode(products, Product::class.java)
     }
 
-    private fun findSoldProducts(): List<Product> = repository.findAllByStatus(PaginationRequest(Int.MAX_VALUE, 1), ProductStatus.SOLD.toString())
+    private fun findSoldProducts(): List<Product> =
+        repository.findAllByStatus(PaginationRequest(Int.MAX_VALUE, 1), ProductStatus.SOLD.toString())
 }

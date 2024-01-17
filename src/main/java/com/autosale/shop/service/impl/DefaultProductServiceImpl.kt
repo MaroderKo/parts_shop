@@ -8,6 +8,8 @@ import com.autosale.shop.model.Product
 import com.autosale.shop.model.ProductStatus
 import com.autosale.shop.repository.ProductRepository
 import com.autosale.shop.service.ProductService
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -93,15 +95,32 @@ class DefaultProductServiceImpl
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     override fun buy(productId: Int) {
-        var product: Product = findById(productId)
-        if (product.status == ProductStatus.ON_SALE && product.sellerId != SecurityContextHolder.getContext().authentication.principal) {
-            product = product.copy(
-                status = ProductStatus.SOLD,
-                buyerId = SecurityContextHolder.getContext().authentication.principal as Int
-            )
-            repository.update(product)
-        } else {
-            throw InvalidOperationException("You can't buy this product")
+        runBlocking {
+            var product: Product = findById(productId)
+            if (product.status == ProductStatus.ON_SALE && product.sellerId != SecurityContextHolder.getContext().authentication.principal) {
+                repository.setStatus(productId, ProductStatus.RESERVED) //Lock product for purchase
+                if (checkPayment(productId))
+                {
+                    product = product.copy(
+                        status = ProductStatus.SOLD,
+                        buyerId = SecurityContextHolder.getContext().authentication.principal as Int
+                    )
+                    repository.update(product)
+                }
+                else //Unlocking product after purchase failed
+                {
+                    repository.setStatus(productId, product.status!!)
+                }
+            } else {
+                throw InvalidOperationException("You can't buy this product")
+            }
         }
+    }
+
+    //simulate repeatable requests to payment service until it'll return result of payment
+    suspend fun checkPayment(id: Int) : Boolean
+    {
+        delay(7000)
+        return true
     }
 }

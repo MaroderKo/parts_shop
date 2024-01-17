@@ -2,6 +2,7 @@ package com.autosale.shop.repository.impl
 
 import com.autosale.shop.model.PaginationRequest
 import com.autosale.shop.model.Product
+import com.autosale.shop.model.ProductStatus
 import com.autosale.shop.repository.ProductRepository
 import org.jooq.Condition
 import org.jooq.DSLContext
@@ -66,6 +67,10 @@ class ProductRepositoryImpl(private val dsl: DSLContext) : ProductRepository {
     override fun saveAllIgnoreExistence(products: List<Product>) {
         dsl.batchStore(products.map { p: Product -> dsl.newRecord(structure.tables.Product.PRODUCT, p) })
             .execute()
+    }
+
+    override fun setStatus(productId: Int, status: ProductStatus) {
+        dsl.update(structure.tables.Product.PRODUCT).set(structure.tables.Product.PRODUCT.STATUS, status.name).execute()
     }
 
     private fun findAllWithConditions(conditions: List<Condition>): List<Product> {

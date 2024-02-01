@@ -17,11 +17,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import static com.autosale.shop.generator.ProductGenerator.generate;
@@ -32,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ActiveProfiles("Kafka")
 public class ProductServiceTest {
 
     private final ProductRepository repository = Mockito.mock(ProductRepositoryImpl.class);
@@ -60,7 +61,7 @@ public class ProductServiceTest {
     @Test
     void findById() {
         Product product = generate(null, 0, null);
-        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(product);
 
         Product returned = productService.findById(product.getId());
         assertThat(returned, is(product));
@@ -68,7 +69,7 @@ public class ProductServiceTest {
 
     @Test
     void findById_with_illegal_id() {
-        when(repository.findById(-1)).thenReturn(Optional.empty());
+        when(repository.findById(-1)).thenReturn(null);
         assertThrows(ResponseStatusException.class, () -> productService.findById(-1));
     }
 
@@ -100,14 +101,14 @@ public class ProductServiceTest {
     @Test
     void create_with_low_price() {
         Product product = generate(null, 3, 50f);
-        when(repository.save(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.ON_SALE, product.getSellerId(), product.getBuyerId()))).thenReturn(Optional.of(product.getId()));
+        when(repository.save(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.ON_SALE, product.getSellerId(), product.getBuyerId()))).thenReturn(product.getId());
         assertThat(productService.create(product), is(product.getId()));
     }
 
     @Test
     void create_with_high_price() {
         Product product = generate(null, 3, 150f);
-        when(repository.save(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.ON_MODERATION, product.getSellerId(), product.getBuyerId()))).thenReturn(Optional.of(product.getId()));
+        when(repository.save(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.ON_MODERATION, product.getSellerId(), product.getBuyerId()))).thenReturn(product.getId());
         assertThat(productService.create(product), is(product.getId()));
     }
 
@@ -155,7 +156,7 @@ public class ProductServiceTest {
     void delete() {
         setUserAuthenticationContext();
         Product product = generate(null, 3, null);
-        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(product);
         when(repository.deleteById(product.getId())).thenReturn(1);
         assertThat(productService.deleteById(product.getId()), is(1));
     }
@@ -164,7 +165,7 @@ public class ProductServiceTest {
     void delete_not_owned() {
         setUserAuthenticationContext();
         Product product = generate(null, 4, null);
-        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(product);
         when(repository.deleteById(product.getId())).thenReturn(1);
         assertThrows(PermissionDeniedException.class, () -> productService.deleteById(product.getId()));
     }
@@ -173,7 +174,7 @@ public class ProductServiceTest {
     void delete_not_owned_as_admin() {
         setAdminAuthenticationContext();
         Product product = generate(null, 4, null);
-        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(product);
         when(repository.deleteById(product.getId())).thenReturn(1);
         assertThat(productService.deleteById(product.getId()), is(1));
     }
@@ -183,7 +184,7 @@ public class ProductServiceTest {
     void makeSold() {
         SecurityContextHolder.setContext(new SecurityContextImpl(new UsernamePasswordAuthenticationToken(4, null, List.of(new SimpleGrantedAuthority("ROLE_USER")))));
         Product product = generate(ProductStatus.ON_SALE, 3, 80f);
-        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(product);
         productService.buy(product.getId());
         verify(repository).update(new Product(product.getId(), product.getName(), product.getDescription(), product.getCost(), ProductStatus.SOLD, product.getSellerId(), 4));
     }

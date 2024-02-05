@@ -7,13 +7,15 @@ import com.autosale.shop.service.AuthenticationService
 import com.autosale.shop.service.JwtTokenService
 import com.autosale.shop.service.UserService
 import com.autosale.shop.service.UserSessionService
+import io.micrometer.core.instrument.Counter
 import org.springframework.stereotype.Service
 
 @Service
 class AuthenticationServiceImpl(
     private val jwtTokenService: JwtTokenService,
     private val userService: UserService,
-    private val userSessionService: UserSessionService
+    private val userSessionService: UserSessionService,
+    private val userLoginCounter: Counter
 ) : AuthenticationService {
 
     override fun loginByUserCredentials(user: User): JwtTokensDTO {
@@ -21,6 +23,7 @@ class AuthenticationServiceImpl(
         val fullUser = userService.getVerifiedUser(userName, password)
         userSessionService.createSession(fullUser)
         Logger.Info("User $userName logged in!").log()
+        userLoginCounter.increment()
         return jwtTokenService.generateTokensPair(fullUser)
     }
 

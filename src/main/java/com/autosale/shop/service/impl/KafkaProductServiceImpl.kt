@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 @Profile("Kafka & !RabbitMQ")
@@ -23,6 +24,7 @@ class KafkaProductServiceImpl(
     private val template: KafkaTemplate<Any, Any>?
 ) : ProductService {
 
+    private val productCounter : AtomicInteger = AtomicInteger(countAllActive())
     override fun findByStatus(
         paginationRequest: PaginationRequest,
         status: ProductStatus?
@@ -57,7 +59,9 @@ class KafkaProductServiceImpl(
         )
         return runCatching { repository.save(productConfigured) }
             .fold(
-                onSuccess = { Result.success(it) },
+                onSuccess = {
+                    Result.success(it).also { productCounter.incrementAndGet() }
+                            },
                 onFailure = {
                     Result.failure(
                         ResponseStatusException(
@@ -83,7 +87,7 @@ class KafkaProductServiceImpl(
                 id
             ).sellerId == SecurityContextHolder.getContext().authentication.principal
         ) {
-            repository.deleteById(id)
+            repository.deleteById(id).also { productCounter.decrementAndGet() }
         } else {
             throw PermissionDeniedException("You don't have permission to do that!")
         }
@@ -102,6 +106,14 @@ class KafkaProductServiceImpl(
         }
     }
 
+    override fun getActiveProducts(): AtomicInteger {
+        return productCounter
+    }
+
+    final override fun countAllActive(): Int {
+        return repository.countAllActive()
+    }
+
     @KafkaListener(id = "buyGroup", topics = ["shopping"])
     fun buyListener(saleInfo: SaleInfoDTO) {
         println("SaleInfo received")
@@ -110,6 +122,6 @@ class KafkaProductServiceImpl(
             status = ProductStatus.SOLD,
             buyerId = saleInfo.buyerId
         )
-        repository.update(product)
+        repository.update(product).also { productCounter.decrementAndGet() }
     }
 }

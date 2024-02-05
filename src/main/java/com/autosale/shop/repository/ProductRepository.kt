@@ -15,4 +15,5 @@ interface ProductRepository {
     fun countAllByStatus(pageRequest: PaginationRequest, status: String?): Int
     fun saveAllIgnoreExistence(products: List<Product>)
     fun setStatus(productId: Int, status: ProductStatus)
+    fun countAllActive(): Int
 }

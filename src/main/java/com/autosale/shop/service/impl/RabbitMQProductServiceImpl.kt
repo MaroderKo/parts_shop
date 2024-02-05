@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 @Profile("RabbitMQ & !Kafka")
@@ -22,6 +23,8 @@ class RabbitMQProductServiceImpl(
     private val repository: ProductRepository,
     private val template: RabbitTemplate
 ) : ProductService {
+
+    private val productCounter : AtomicInteger = AtomicInteger(countAllActive())
 
     override fun findByStatus(
         paginationRequest: PaginationRequest,
@@ -58,7 +61,9 @@ class RabbitMQProductServiceImpl(
 
         return runCatching { repository.save(productConfigured) }
             .fold(
-                onSuccess = { Result.success(it) },
+                onSuccess = {
+                    Result.success(it).also { productCounter.incrementAndGet() }
+                            },
                 onFailure = {
                     Result.failure(
                         ResponseStatusException(
@@ -84,7 +89,7 @@ class RabbitMQProductServiceImpl(
                 id
             ).sellerId == SecurityContextHolder.getContext().authentication.principal
         ) {
-            repository.deleteById(id)
+            repository.deleteById(id).also { productCounter.decrementAndGet() }
         } else {
             throw PermissionDeniedException("You don't have permission to do that!")
         }
@@ -103,6 +108,14 @@ class RabbitMQProductServiceImpl(
         }
     }
 
+    override fun getActiveProducts(): AtomicInteger {
+        return productCounter
+    }
+
+    final override fun countAllActive(): Int {
+        return repository.countAllActive()
+    }
+
     @RabbitListener(id = "buyGroup", queues = ["shopping"])
     fun buyListener(saleInfo: SaleInfoDTO) {
         println("SaleInfo received")
@@ -111,6 +124,6 @@ class RabbitMQProductServiceImpl(
             status = ProductStatus.SOLD,
             buyerId = SecurityContextHolder.getContext().authentication.principal as Int
         )
-        repository.update(product)
+        repository.update(product).also { productCounter.decrementAndGet() }
     }
 }

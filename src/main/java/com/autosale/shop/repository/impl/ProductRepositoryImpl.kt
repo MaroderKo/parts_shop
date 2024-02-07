@@ -70,7 +70,11 @@ class ProductRepositoryImpl(private val dsl: DSLContext) : ProductRepository {
     }
 
     override fun setStatus(productId: Int, status: ProductStatus) {
-        dsl.update(structure.tables.Product.PRODUCT).set(structure.tables.Product.PRODUCT.STATUS, status.name).execute()
+        dsl.update(structure.tables.Product.PRODUCT).set(structure.tables.Product.PRODUCT.STATUS, status.name).where(structure.tables.Product.PRODUCT.ID.eq(productId)).execute()
+    }
+
+    override fun countAllActive(): Int {
+        return dsl.fetchCount(structure.tables.Product.PRODUCT, structure.tables.Product.PRODUCT.STATUS.notIn("BLOCKED","SOLD"))
     }
 
     private fun findAllWithConditions(conditions: List<Condition>): List<Product> {

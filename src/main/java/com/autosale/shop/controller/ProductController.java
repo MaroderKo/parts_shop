@@ -5,6 +5,8 @@ import com.autosale.shop.model.PaginationResponse;
 import com.autosale.shop.model.Product;
 import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.service.ProductService;
+import com.autosale.shop.util.MetricUtil;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +56,7 @@ public class ProductController {
     }
 
     @PostMapping("/buy/{id}")
+    @Timed(value = MetricUtil.Timer.PURCHASE_TIME)
     public ResponseEntity<Void> buy(@PathVariable int id) {
         service.buy(id);
         return ResponseEntity.ok().build();

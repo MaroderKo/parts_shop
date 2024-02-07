@@ -7,7 +7,10 @@ import com.autosale.shop.model.PaginationResponse
 import com.autosale.shop.model.Product
 import com.autosale.shop.model.ProductStatus
 import com.autosale.shop.repository.ProductRepository
+import com.autosale.shop.service.MetricService
 import com.autosale.shop.service.ProductService
+import com.autosale.shop.util.MetricUtil.Counter.ACTIVE_PRODUCTS
+import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.Profile
@@ -18,13 +21,21 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Isolation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import kotlin.random.Random
 
 @Service
 @Profile("!Kafka & !RabbitMQ")
 class DefaultProductServiceImpl
     (
-    private val repository: ProductRepository
+    private val repository: ProductRepository,
+    private val metricService: MetricService
 ) : ProductService {
+
+    @PostConstruct
+    private fun initMetric()
+    {
+        metricService.increment(ACTIVE_PRODUCTS,countAllActive())
+    }
 
     override fun findByStatus(
         paginationRequest: PaginationRequest,
@@ -55,13 +66,16 @@ class DefaultProductServiceImpl
 
     override fun create(product: Product): Int {
         val productConfigured = product.copy(
-            status = if (product.cost >= 100) ProductStatus.ON_SALE else ProductStatus.ON_MODERATION,
+            status = if (product.cost <= 100) ProductStatus.ON_SALE else ProductStatus.ON_MODERATION,
             sellerId = product.sellerId ?: SecurityContextHolder.getContext().authentication.principal as Int
         )
 
         return runCatching { repository.save(productConfigured) }
             .fold(
-                onSuccess = { Result.success(it) },
+                onSuccess = {
+
+                    Result.success(it).also { metricService.increment(ACTIVE_PRODUCTS) }
+                            },
                 onFailure = {
                     Result.failure(
                         ResponseStatusException(
@@ -87,7 +101,7 @@ class DefaultProductServiceImpl
                 id
             ).sellerId == SecurityContextHolder.getContext().authentication.principal
         ) {
-            repository.deleteById(id)
+            repository.deleteById(id).also { metricService.increment(ACTIVE_PRODUCTS, -1) }
         } else {
             throw PermissionDeniedException("You don't have permission to do that!")
         }
@@ -105,7 +119,7 @@ class DefaultProductServiceImpl
                         status = ProductStatus.SOLD,
                         buyerId = SecurityContextHolder.getContext().authentication.principal as Int
                     )
-                    repository.update(product)
+                    repository.update(product).also { metricService.increment(ACTIVE_PRODUCTS, -1) }
                 }
                 else //Unlocking product after purchase failed
                 {
@@ -120,7 +134,12 @@ class DefaultProductServiceImpl
     //simulate repeatable requests to payment service until it'll return result of payment
     suspend fun checkPayment(id: Int) : Boolean
     {
-        delay(7000)
+        delay(Random.nextLong(5,11)*1000)
         return true
+    }
+
+    final override fun countAllActive() : Int
+    {
+        return repository.countAllActive()
     }
 }

@@ -16,4 +16,5 @@ interface ProductService {
     fun edit(product: Product)
     fun deleteById(id: Int): Int
     fun buy(productId: Int)
+    fun countAllActive(): Int
 }

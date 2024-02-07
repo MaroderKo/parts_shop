@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
+import io.micrometer.core.aop.CountedAspect
+import io.micrometer.core.aop.TimedAspect
+import io.micrometer.core.instrument.MeterRegistry
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -45,5 +48,15 @@ class BeanConfiguration(
     @Bean
     fun redisClient(): RedisClient {
         return RedisClient.create(RedisURI.create(redisProperties.host, redisProperties.port))
+    }
+
+    @Bean
+    fun countedAspect(registry: MeterRegistry): CountedAspect {
+        return CountedAspect(registry)
+    }
+
+    @Bean
+    fun timedAspect(registry: MeterRegistry): TimedAspect {
+        return TimedAspect(registry)
     }
 }

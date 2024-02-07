@@ -4,7 +4,10 @@ import com.autosale.shop.exception.InvalidOperationException
 import com.autosale.shop.exception.PermissionDeniedException
 import com.autosale.shop.model.*
 import com.autosale.shop.repository.ProductRepository
+import com.autosale.shop.service.MetricService
 import com.autosale.shop.service.ProductService
+import com.autosale.shop.util.MetricUtil.Counter.ACTIVE_PRODUCTS
+import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.kafka.annotation.KafkaListener
@@ -20,9 +23,15 @@ import org.springframework.web.server.ResponseStatusException
 @Profile("Kafka & !RabbitMQ")
 class KafkaProductServiceImpl(
     private val repository: ProductRepository,
-    private val template: KafkaTemplate<Any, Any>?
+    private val template: KafkaTemplate<Any, Any>?,
+    private val metricService: MetricService
 ) : ProductService {
 
+    @PostConstruct
+    private fun initMetric()
+    {
+        metricService.increment(ACTIVE_PRODUCTS,countAllActive())
+    }
     override fun findByStatus(
         paginationRequest: PaginationRequest,
         status: ProductStatus?
@@ -52,12 +61,14 @@ class KafkaProductServiceImpl(
 
     override fun create(product: Product): Int {
         val productConfigured = product.copy(
-            status = if (product.cost >= 100) ProductStatus.ON_MODERATION else ProductStatus.ON_SALE,
+            status = if (product.cost <= 100) ProductStatus.ON_SALE else ProductStatus.ON_MODERATION,
             sellerId = product.sellerId ?: SecurityContextHolder.getContext().authentication.principal as Int
         )
         return runCatching { repository.save(productConfigured) }
             .fold(
-                onSuccess = { Result.success(it) },
+                onSuccess = {
+                    Result.success(it).also { metricService.increment(ACTIVE_PRODUCTS) }
+                            },
                 onFailure = {
                     Result.failure(
                         ResponseStatusException(
@@ -83,7 +94,7 @@ class KafkaProductServiceImpl(
                 id
             ).sellerId == SecurityContextHolder.getContext().authentication.principal
         ) {
-            repository.deleteById(id)
+            repository.deleteById(id).also { metricService.increment(ACTIVE_PRODUCTS, -1) }
         } else {
             throw PermissionDeniedException("You don't have permission to do that!")
         }
@@ -102,6 +113,10 @@ class KafkaProductServiceImpl(
         }
     }
 
+    final override fun countAllActive(): Int {
+        return repository.countAllActive()
+    }
+
     @KafkaListener(id = "buyGroup", topics = ["shopping"])
     fun buyListener(saleInfo: SaleInfoDTO) {
         println("SaleInfo received")
@@ -110,6 +125,6 @@ class KafkaProductServiceImpl(
             status = ProductStatus.SOLD,
             buyerId = saleInfo.buyerId
         )
-        repository.update(product)
+        repository.update(product).also { metricService.increment(ACTIVE_PRODUCTS, -1) }
     }
 }

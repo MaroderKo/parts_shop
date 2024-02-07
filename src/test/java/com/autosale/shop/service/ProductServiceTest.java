@@ -8,7 +8,7 @@ import com.autosale.shop.model.Product;
 import com.autosale.shop.model.ProductStatus;
 import com.autosale.shop.repository.ProductRepository;
 import com.autosale.shop.repository.impl.ProductRepositoryImpl;
-import com.autosale.shop.service.impl.KafkaProductServiceImpl;
+import com.autosale.shop.service.impl.DefaultProductServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -35,10 +35,11 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("Kafka")
 public class ProductServiceTest {
 
+    private final MetricService metricService = Mockito.mock(MetricService.class);
     private final ProductRepository repository = Mockito.mock(ProductRepositoryImpl.class);
 
     //TODO: fix tests
-    private final ProductService productService = new KafkaProductServiceImpl(repository, null);
+    private final ProductService productService = new DefaultProductServiceImpl(repository, metricService);
 
     @AfterEach
     void contextClear() {

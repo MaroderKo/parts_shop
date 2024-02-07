@@ -5,7 +5,6 @@ import com.autosale.shop.model.PaginationResponse
 import com.autosale.shop.model.Product
 import com.autosale.shop.model.ProductStatus
 import org.springframework.stereotype.Service
-import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 interface ProductService {
@@ -17,6 +16,5 @@ interface ProductService {
     fun edit(product: Product)
     fun deleteById(id: Int): Int
     fun buy(productId: Int)
-    fun getActiveProducts(): AtomicInteger
     fun countAllActive(): Int
 }
